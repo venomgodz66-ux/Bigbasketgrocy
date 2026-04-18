@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>BigBasket Clone - Fresh Groceries Delivered</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigBasket</title>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -37,23 +37,7 @@
         }
         .cart-box {
             border: 1.5px solid var(--bb-light-green); padding: 4px 8px;
-            border-radius: 8px; position: relative; cursor: pointer;
-        }
-        .cart-count {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #e91e63;
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 11px;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            border: 2px solid white;
+            border-radius: 8px;
         }
 
         .slider-container { position: relative; width: 100%; height: 380px; overflow: hidden; }
@@ -62,376 +46,2747 @@
         .slide-1 { background: var(--bb-green); background-image: radial-gradient(circle at 80% 20%, #1fa546 0%, transparent 60%); }
         .slide-2 { background: #074d1e; background-image: radial-gradient(circle at 80% 20%, #0e7b2a 0%, transparent 60%); }
         .slide-3 { background: var(--bb-red); background-image: radial-gradient(circle at 80% 20%, #e63946 0%, transparent 60%); }
-        .slide-tag { display: inline-block; padding: 6px 14px; border-radius: 25px; font-size: 11px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; background: rgba(255,255,255,0.15); }
+
+        .slide-tag {
+            display: inline-block; padding: 6px 14px; border-radius: 25px;
+            font-size: 11px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.15);
+        }
         .slide h1 { font-size: 34px; font-weight: 800; line-height: 1.1; margin-bottom: 15px; }
         .slide h1 span { color: var(--bb-yellow); }
-        .slide p { font-size: 14px; opacity: 0.9; margin-bottom: 30px; }
+        .slide p { font-size: 14px; opacity: 0.9; margin-bottom: 30px; line-height: 1.4; }
         .btn-row { display: flex; gap: 10px; }
-        .btn-main { background: var(--bb-yellow); border: none; padding: 12px 24px; border-radius: 10px; font-weight: 700; color: black; cursor: pointer; }
-        .btn-line { background: transparent; border: 1px solid white; padding: 12px 24px; border-radius: 10px; font-weight: 700; color: white; cursor: pointer; }
-        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.2); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; z-index: 10; }
+        .btn-main { background: var(--bb-yellow); border: none; padding: 12px 24px; border-radius: 10px; font-weight: 700; color: black; }
+        .btn-main.green-btn { background: #56f0a1; }
+        .btn-line { background: transparent; border: 1px solid white; padding: 12px 24px; border-radius: 10px; font-weight: 700; color: white; }
+
+        .nav-btn {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(0,0,0,0.2); color: white; border: none;
+            width: 35px; height: 35px; border-radius: 50%; cursor: pointer; z-index: 10;
+        }
         .prev { left: 10px; }
         .next { right: 10px; }
-        .dots-container { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+        .dots-container {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 8px;
+        }
         .dot { width: 8px; height: 8px; background: rgba(255,255,255,0.4); border-radius: 50%; cursor: pointer; transition: 0.3s; }
         .dot.active { width: 25px; background: white; border-radius: 10px; }
-        .info-bar { background: var(--bb-yellow); padding: 12px 5px; display: flex; justify-content: space-around; font-size: 9px; font-weight: 700; }
-        .categories { display: flex; overflow-x: auto; padding: 20px 15px; gap: 15px; background: white; }
+
+        .info-bar {
+            background: var(--bb-yellow);
+            padding: 12px 5px;
+            display: flex;
+            justify-content: space-around;
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .categories {
+            display: flex;
+            overflow-x: auto;
+            padding: 20px 15px;
+            gap: 15px;
+            background: white;
+        }
         .cat-card { text-align: center; min-width: 75px; }
-        .img-box { background: #f9f9f9; border: 1px solid #eee; border-radius: 18px; height: 75px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 30px; }
-        .flash-deal { margin: 15px 15px 12px; background: #0e7b2a; color: white; border-radius: 16px; padding: 22px 20px; display: flex; align-items: center; position: relative; box-shadow: 0 6px 20px rgba(14,123,42,0.25); overflow: hidden; }
-        .gift-box { width: 130px; height: 130px; background: #ffcc00; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 85px; position: relative; box-shadow: 8px 12px 25px rgba(0,0,0,0.2); flex-shrink: 0; }
-        .fresh-dairy, .personal-care { margin: 0 15px 12px; border-radius: 14px; padding: 16px 18px; display: flex; align-items: center; box-shadow: 0 3px 12px rgba(0,0,0,0.06); cursor: pointer; }
+        .img-box {
+            background: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 18px;
+            height: 75px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+        .flash-deal {
+            margin: 15px 15px 12px;
+            background: #0e7b2a;
+            color: white;
+            border-radius: 16px;
+            padding: 22px 20px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 6px 20px rgba(14,123,42,0.25);
+            overflow: hidden;
+        }
+        .gift-box {
+            width: 130px;
+            height: 130px;
+            background: #ffcc00;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 85px;
+            position: relative;
+            box-shadow: 8px 12px 25px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+        }
+        .fresh-dairy, .personal-care {
+            margin: 0 15px 12px;
+            border-radius: 14px;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        }
         .fresh-dairy { background: #fff9e6; }
         .personal-care { background: #f0f8ff; }
-        .deals-section { margin-top: 15px; background: white; padding-bottom: 20px; }
-        .deals-header { padding: 15px 15px 8px; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 12px; }
-        .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.08); border: 1px solid #eee; cursor: pointer; transition: transform 0.2s; }
-        .product-card:hover { transform: scale(1.02); }
-        .product-image { height: 165px; background: #f8f8f8; position: relative; display: flex; align-items: center; justify-content: center; }
-        .product-image img { max-height: 145px; max-width: 90%; object-fit: contain; }
-        .discount-badge { position: absolute; top: 10px; left: 10px; background: #e30613; color: white; font-size: 13px; font-weight: 700; padding: 4px 9px; border-radius: 20px; z-index: 2; }
-        .right-logo { position: absolute; top: 0; right: 0; width: 85px; height: auto; z-index: 1; border-bottom-left-radius: 8px; background: #8cc63f; }
-        .product-info { padding: 12px; }
-        .product-title { font-size: 13.5px; line-height: 1.35; margin-bottom: 6px; height: 42px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-weight: 600; color: #222; }
-        .rating { color: #f4b400; font-size: 13px; margin-bottom: 8px; }
-        .price-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-        .current-price { font-size: 18px; font-weight: 800; color: #111; }
-        .old-price { text-decoration: line-through; color: #888; font-size: 13px; }
-        .off { color: #e30613; font-weight: 700; font-size: 13px; }
-        .add-btn { width: 100%; background: var(--bb-green); color: white; border: none; padding: 11px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-        .add-btn:active { transform: scale(0.97); }
-        
-        /* Modal styles */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.85); z-index: 9999; align-items: center; justify-content: center; overflow-y: auto; }
-        .modal-content { background: white; width: 100%; max-width: 500px; min-height: 100vh; box-shadow: 0 0 30px rgba(0,0,0,0.4); position: relative; overflow-y: auto; }
-        .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; background: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .modal-green-bar { background: #00b140; color: white; text-align: center; padding: 8px 10px; font-size: 13px; font-weight: 700; }
-        .breadcrumb { padding: 12px 15px; font-size: 13px; color: #666; background: #f8f8f8; }
-        .product-showcase { margin: 15px; background: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 0; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
-        .offer-badge { position: absolute; top: 15px; left: 15px; background: #e30613; color: white; padding: 4px 12px; border-radius: 4px; font-weight: 700; font-size: 14px; z-index: 2; }
-        .image-wrapper { width: 100%; padding: 20px; display: flex; justify-content: center; align-items: center; background: white; }
-        .image-wrapper img { max-width: 100%; max-height: 280px; object-fit: contain; }
-        .genuine-tag { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; background: #e8f5e9; color: #00b140; padding: 6px 16px; border-radius: 30px; font-size: 13px; margin: 0 15px 15px; font-weight: 600; border: 1px solid #c8e6c9; }
-        .trusted-bar { margin: 10px 15px; background: #e8f5e9; padding: 12px; border-radius: 12px; text-align: center; font-size: 14px; color: #00b140; font-weight: 600; }
-        .modal-product-title { padding: 0 15px 10px; font-size: 20px; line-height: 1.3; font-weight: 800; }
-        .modal-rating { padding: 0 15px; display: flex; align-items: center; gap: 12px; margin-bottom: 15px; flex-wrap: wrap; }
-        .modal-price { padding: 0 15px 15px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-        .modal-price .current { font-size: 32px; font-weight: 800; color: #0e7b2a; }
-        .modal-price .old { font-size: 18px; text-decoration: line-through; color: #888; }
-        .modal-price .off { background: #e30613; color: white; padding: 4px 12px; border-radius: 20px; font-size: 16px; font-weight: 700; }
-        .timer-bar { margin: 0 15px 12px; background: #fff4e5; border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; gap: 10px; font-weight: 600; color: #d97706; }
-        .hurry-bar { margin: 0 15px 18px; background: #fffbeb; border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; gap: 10px; font-weight: 600; color: #b45309; }
-        .features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px 20px; }
-        .feature-box { background: #f8f8f8; border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
-        .buy-button { margin: 0 15px 20px; background: #00b140; color: white; border: none; width: calc(100% - 30px); padding: 18px; font-size: 18px; font-weight: 700; border-radius: 50px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
-        .payment-info { text-align: center; padding: 0 15px 30px; font-size: 13px; color: #555; }
-        .modal-close { position: absolute; top: 18px; right: 18px; background: none; border: none; font-size: 34px; color: #222; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; z-index: 100; cursor: pointer; }
-        
-        /* Cart, Address, Payment, Success pages */
-        .cart-page, .address-page, .payment-page, .orders-page { display: none; position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; height: 100vh; background: #f4f6f8; z-index: 99999; overflow-y: auto; }
-        .cart-header, .address-header, .orders-header { background: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .continue-shopping { padding: 15px; background: #f4f6f8; color: #666; font-size: 15px; display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600; }
-        .delivery-status-bar { margin: 0 15px 15px; background: #0e8321; color: white; padding: 15px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; }
-        .cart-card-main { background: white; margin: 0 15px 15px; border-radius: 20px; padding: 20px; }
-        .cart-title-row { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; }
-        .cart-item-row { display: flex; padding: 15px 0; border-bottom: 1px solid #f0f0f0; align-items: flex-start; gap: 12px; }
-        .cart-item-row .item-img { width: 75px; height: 75px; object-fit: contain; border: 1px solid #eee; border-radius: 8px; background: #f9f9f9; }
-        .cart-item-details { flex: 1; }
-        .cart-item-title { font-size: 13px; font-weight: 600; line-height: 1.3; margin-bottom: 6px; }
-        .cart-item-price { font-weight: 800; color: #0e7b2a; }
-        .qty-control-new { display: flex; align-items: center; border: 1.5px solid #0e8321; border-radius: 8px; overflow: hidden; background: white; }
-        .qty-control-new span { padding: 0 12px; color: #0e8321; font-weight: 800; cursor: pointer; font-size: 20px; line-height: 32px; user-select: none; }
-        .qty-control-new .qty-num { padding: 0 12px; font-size: 14px; font-weight: 700; border-left: 1px solid #0e8321; border-right: 1px solid #0e8321; }
-        .bill-card { background: white; margin: 0 15px 20px; border-radius: 20px; padding: 22px; }
-        .bill-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 15px; }
-        .total-row { margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd; font-weight: 800; font-size: 18px; display: flex; justify-content: space-between; }
-        .btn-checkout-main { width: 100%; background: #0e8321; color: white; border: none; display: flex; justify-content: center; padding: 16px; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 15px; }
-        .steps-bar { background: white; margin: 0 15px 15px; padding: 12px 20px; border-radius: 12px; display: flex; gap: 15px; align-items: center; }
-        .step.active { color: #0e8321; font-weight: 700; }
-        .address-form-card { background: white; margin: 0 15px 20px; border-radius: 15px; padding: 20px; }
+
+        .deals-section {
+            margin-top: 15px;
+            background: white;
+            padding-bottom: 20px;
+        }
+        .deals-header {
+            padding: 15px 15px 8px;
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 0 12px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .product-card:hover {
+            transform: scale(1.03);
+        }
+        .product-image {
+            height: 165px;
+            background: #f8f8f8;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-image img {
+            max-height: 145px;
+            max-width: 90%;
+            object-fit: contain;
+        }
+        .discount-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #e30613;
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 4px 9px;
+            border-radius: 20px;
+        }
+        .right-logo {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 95px;
+            height: auto;
+            z-index: 2;
+            border-bottom-left-radius: 8px;
+            background: #8cc63f;
+        }
+        .product-info {
+            padding: 12px;
+        }
+        .product-title {
+            font-size: 13.5px;
+            line-height: 1.35;
+            margin-bottom: 6px;
+            height: 42px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        .rating {
+            color: #f4b400;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        .price-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .current-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111;
+        }
+        .old-price {
+            text-decoration: line-through;
+            color: #888;
+            font-size: 13px;
+        }
+        .off {
+            color: #e30613;
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .add-btn {
+            width: 100%;
+            background: var(--bb-green);
+            color: white;
+            border: none;
+            padding: 11px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        /* ==================== PRODUCT DETAIL MODAL ==================== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            min-height: 100vh;
+            box-shadow: 0 0 30px rgba(0,0,0,0.4);
+            position: relative;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .modal-green-bar {
+            background: #00b140;
+            color: white;
+            text-align: center;
+            padding: 8px 10px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .breadcrumb {
+            padding: 12px 15px;
+            font-size: 13px;
+            color: #666;
+            background: #f8f8f8;
+        }
+        .breadcrumb a { color: #0e7b2a; text-decoration: none; }
+
+        .product-showcase {
+            margin: 15px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .offer-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #e30613;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 14px;
+            z-index: 2;
+        }
+        .image-wrapper {
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: white;
+        }
+        .image-wrapper img {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+        }
+        .genuine-tag {
+            align-self: flex-start;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #e8f5e9;
+            color: #00b140;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            margin: 0 15px 15px;
+            font-weight: 600;
+            border: 1px solid #c8e6c9;
+        }
+        .trusted-bar {
+            margin: 10px 15px;
+            background: #e8f5e9;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 14px;
+            color: #00b140;
+            font-weight: 600;
+        }
+        .modal-product-title {
+            padding: 0 15px 10px;
+            font-size: 20px;
+            line-height: 1.3;
+            font-weight: 700;
+        }
+        .modal-rating {
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .modal-price {
+            padding: 0 15px 15px;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+        .modal-price .current {
+            font-size: 32px;
+            font-weight: 800;
+        }
+        .modal-price .old {
+            font-size: 18px;
+            text-decoration: line-through;
+            color: #888;
+        }
+        .modal-price .off {
+            background: #e30613;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .timer-bar {
+            margin: 0 15px 12px;
+            background: #fff4e5;
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #d97706;
+        }
+        .hurry-bar {
+            margin: 0 15px 18px;
+            background: #fffbeb;
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #b45309;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 0 15px 20px;
+        }
+        .feature-box {
+            background: #f8f8f8;
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+        }
+        .feature-box img {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+        }
+        .buy-button {
+            margin: 0 15px 20px;
+            background: #00b140;
+            color: white;
+            border: none;
+            width: calc(100% - 30px);
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(0,177,64,0.3);
+        }
+        .buy-button img {
+            height: 26px;
+            filter: brightness(0) invert(1);
+        }
+        .payment-info {
+            text-align: center;
+            padding: 0 15px 30px;
+            font-size: 13px;
+            color: #555;
+        }
+        .payment-info small {
+            display: block;
+            margin-top: 8px;
+            color: #888;
+        }
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: none;
+            border: none;
+            font-size: 34px;
+            color: #222;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            cursor: pointer;
+        }
+        .main-footer {
+            background: #1a1a1a;
+            color: #ccc;
+            padding: 40px 20px 20px;
+            margin-top: 30px;
+            font-size: 14px;
+        }
+        .footer-logo { background: white; display: inline-block; padding: 8px 16px; border-radius: 8px; margin-bottom: 12px; }
+        .footer-logo img { height: 32px; }
+        .footer-tagline { color: #aaa; margin-bottom: 30px; line-height: 1.5; }
+        .app-buttons { display: flex; gap: 12px; margin-bottom: 40px; }
+        .app-buttons img { height: 42px; border-radius: 6px; }
+        .footer-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 20px; margin-bottom: 40px; }
+        .footer-column h3 { color: white; font-size: 15px; font-weight: 700; margin-bottom: 18px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .footer-column ul { list-style: none; }
+        .footer-column li { margin-bottom: 10px; color: #bbb; }
+        .social-section { border-top: 1px solid #333; padding-top: 25px; margin-bottom: 30px; }
+        .social-title { color: #ddd; margin-bottom: 12px; }
+        .social-icons { display: flex; gap: 12px; }
+        .social-icons a { width: 38px; height: 38px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; text-decoration: none; }
+        .delivery-section { border-top: 1px solid #333; padding-top: 25px; margin-bottom: 30px; }
+        .delivery-section h3 { color: white; margin-bottom: 15px; }
+        .cities { display: flex; flex-wrap: wrap; gap: 8px 12px; font-size: 13.5px; line-height: 1.6; color: #bbb; }
+        .about-section { border-top: 1px solid #333; padding-top: 25px; margin-bottom: 30px; font-size: 13.5px; line-height: 1.7; color: #bbb; }
+        .copyright { border-top: 1px solid #333; padding-top: 20px; text-align: center; font-size: 12.5px; color: #888; }
+        .bottom-links { text-align: center; margin-top: 12px; font-size: 12px; }
+        .bottom-links a { color: #aaa; margin: 0 8px; text-decoration: none; }
+
+        /* ==================== CART PAGE ==================== */
+        .cart-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 500px;
+            height: 100vh;
+            background: #f4f6f8;
+            z-index: 99999;
+            overflow-y: auto;
+        }
+        .cart-header {
+            background: white;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .continue-shopping {
+            padding: 15px;
+            background: #f4f6f8;
+            color: #666;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .delivery-status-bar {
+            margin: 0 15px 15px;
+            background: #0e8321;
+            color: white;
+            padding: 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .status-left div b { font-size: 16px; display: block; }
+        .status-left div span { font-size: 13px; opacity: 0.9; }
+
+        .cart-card-main {
+            background: white;
+            margin: 0 15px 15px;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+        .cart-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .cart-title-row .title {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cart-title-row .title span {
+            background: #e9ecef;
+            color: #666;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .cart-title-row .saved { color: #0e8321; font-weight: 700; font-size: 14px; }
+
+        .cart-item-box { display: flex; gap: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0; }
+        .cart-item-img { width: 80px; height: 80px; object-fit: contain; border: 1px solid #f0f0f0; border-radius: 10px; }
+        .cart-item-info { flex: 1; }
+        .cart-item-name { font-size: 14px; font-weight: 600; line-height: 1.4; margin-bottom: 4px; }
+        .cart-item-unit { color: #999; font-size: 13px; margin-bottom: 8px; }
+
+        .price-qty-row { display: flex; justify-content: space-between; align-items: center; }
+        .item-prices { display: flex; align-items: center; gap: 6px; }
+        .item-prices .cur { font-weight: 800; font-size: 17px; }
+        .item-prices .old { color: #999; text-decoration: line-through; font-size: 13px; }
+        .item-prices .pct { color: #0e8321; font-weight: 700; font-size: 13px; }
+
+        .qty-control {
+            border: 1.5px solid #0e8321;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+        .qty-control span { padding: 4px 10px; font-weight: 700; color: #0e8321; }
+        .qty-control .qty-num { background: transparent; padding: 4px 12px; }
+
+        .delivery-eta-mini {
+            margin-top: 15px;
+            background: #f0fdf4;
+            padding: 10px 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #0e8321;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .trust-grid {
+            background: white;
+            margin: 0 15px 15px;
+            border-radius: 20px;
+            padding: 25px 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px 10px;
+            border: 1px solid #f0f0f0;
+        }
+        .trust-item { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+        .trust-item img { width: 32px; height: 32px; }
+        .trust-item span { font-size: 13px; font-weight: 600; color: #666; }
+
+        .bill-card {
+            background: white;
+            margin: 0 15px 20px;
+            border-radius: 20px;
+            padding: 22px;
+            border: 1px solid #f0f0f0;
+        }
+        .bill-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+        .bill-row { display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 15px; color: #666; }
+        .bill-row.savings { color: #0e8321; font-weight: 600; }
+        .bill-row.savings div:first-child { color: #0e8321; }
+        .bill-row .free-val { color: #0e8321; font-weight: 600; }
+        .total-row {
+            margin-top: 15px;
+            padding-top: 18px;
+            border-top: 1px dashed #eee;
+            display: flex;
+            justify-content: space-between;
+            font-size: 19px;
+            font-weight: 800;
+            color: #000;
+        }
+        .savings-alert {
+            margin-top: 22px;
+            background: #f0fdf4;
+            padding: 14px;
+            border-radius: 12px;
+            text-align: center;
+            color: #0e8321;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .btn-checkout-main {
+            width: 100%;
+            background: #0e8321;
+            color: white;
+            border: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            cursor: pointer;
+            border-radius: 12px;
+            height: 60px;
+            margin-top: 20px;
+        }
+        .btn-checkout-left { text-align: left; display: flex; flex-direction: column; }
+        .btn-checkout-left .qty { font-size: 12px; opacity: 0.8; font-weight: 600; }
+        .btn-checkout-left .price { font-size: 18px; font-weight: 800; }
+        .btn-checkout-right { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+        /* ==================== ADDRESS PAGE ==================== */
+        .address-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 500px;
+            height: 100vh;
+            background: #f8f9fa;
+            z-index: 999999;
+            overflow-y: auto;
+            padding-bottom: 40px;
+        }
+        .address-header {
+            background: white;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .back-btn { color: #666; text-decoration: none; display: flex; align-items: center; gap: 5px; font-size: 15px; cursor: pointer; }
+
+        .delivery-bar-green {
+            background: #0e8321;
+            margin: 15px;
+            padding: 15px;
+            border-radius: 15px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .delivery-bar-green .info { display: flex; align-items: center; gap: 12px; }
+        .delivery-bar-green .info b { display: block; font-size: 16px; }
+        .delivery-bar-green .info span { font-size: 13px; opacity: 0.9; }
+
+        .steps-bar {
+            background: white;
+            margin: 0 15px 15px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .step { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; }
+        .step.active { color: #0e8321; }
+        .step.inactive { color: #aaa; }
+        .step-num { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .step.active .step-num { background: #0e8321; color: white; }
+        .step.inactive .step-num { background: #eee; color: #aaa; }
+
+        .address-form-card { background: white; margin: 0 15px 20px; border-radius: 15px; border: 1px solid #eee; padding: 20px; }
+        .form-title { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
         .input-group { margin-bottom: 15px; }
-        .input-group input { width: 100%; padding: 14px 16px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 15px; background: #fcfcfc; }
-        .btn-continue-pay { background: #e9ecef; color: #adb5bd; width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: not-allowed; transition: 0.2s; }
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            font-size: 15px;
+            background: #fcfcfc;
+            outline: none;
+        }
+        .input-group input:focus { border-color: #0e8321; background: white; }
+        .mobile-input { display: flex; gap: 0; border: 1px solid #eee; border-radius: 12px; background: #fcfcfc; overflow: hidden; }
+        .mobile-prefix { padding: 14px 10px 14px 18px; color: #666; font-size: 15px; border-right: 1px solid #eee; }
+        .mobile-input input { border: none; flex: 1; }
+
+        .btn-continue-pay {
+            background: #e9ecef;
+            color: #adb5bd;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 10px;
+            cursor: not-allowed;
+            transition: 0.3s;
+        }
         .btn-continue-pay.ready { background: #0e8321; color: white; cursor: pointer; }
+
+        .order-summary-card { background: white; margin: 0 15px 15px; border-radius: 15px; border: 1px solid #eee; padding: 15px; }
+        .summary-title { font-weight: 700; margin-bottom: 15px; }
+        .summary-item { display: flex; gap: 12px; }
+        .summary-item img { width: 60px; height: 60px; object-fit: contain; border: 1px solid #f0f0f0; border-radius: 8px; }
+        .summary-item .name { font-size: 13px; font-weight: 600; line-height: 1.4; color: #333; }
+        .summary-item .qty { color: #999; font-size: 12px; margin-top: 4px; }
+
+        .trust-badges-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px; }
+        .trust-badge-small {
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+        }
+        .trust-badge-small img { width: 18px; height: 18px; }
+
+        /* ==================== PAYMENT PAGE ==================== */
+        .payment-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 500px;
+            height: 100vh;
+            background: #f8f9fa;
+            z-index: 999999;
+            overflow-y: auto;
+            padding-bottom: 80px;
+        }
+
+        .address-summary-card {
+            background: white;
+            margin: 15px;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #eee;
+            position: relative;
+        }
+        .address-summary-card .change-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #0e8321;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .address-summary-card .name { font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+        .address-summary-card .details { color: #666; line-height: 1.4; font-size: 13px; }
+
+        .payment-methods-card {
+            background: white;
+            margin: 0 15px 15px;
+            border-radius: 15px;
+            border: 1px solid #eee;
+            padding: 20px;
+        }
         .payment-option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .payment-option { border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
+        .payment-option {
+            border: 1.5px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
         .payment-option.active { border-color: #0e8321; background: #f0fdf4; }
-        .radio-circle { width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .radio-circle {
+            width: 18px; height: 18px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
         .payment-option.active .radio-circle { border-color: #0e8321; }
-        .payment-option.active .radio-circle::after { content: ""; width: 10px; height: 10px; background: #0e8321; border-radius: 50%; }
-        .card-input-box { margin-bottom: 15px; }
-        .card-input-box input { width: 100%; padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 16px; letter-spacing: 1px; }
-        .sticky-pay-footer { background: #0e8321; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; color: white; border-radius: 14px; margin: 20px 0 10px; cursor: pointer; font-weight: 700; }
-        .success-hero { background: linear-gradient(135deg, #0e8321 0%, #074d1e 100%); width: 100%; padding: 45px 20px; color: white; text-align: center; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; }
-        .check-circle-big { width: 80px; height: 80px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 45px; color: #0e8321; }
-        .track-btn-new, .continue-btn-new { width: calc(100% - 30px); padding: 16px; border-radius: 16px; font-weight: 800; margin: 0 15px 15px; cursor: pointer; text-align: center; }
-        .track-btn-new { background: #0e8321; color: white; border: none; }
-        .continue-btn-new { background: white; color: #1e293b; border: 2px solid #e2e8f0; }
-        .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px; }
+        .payment-option.active .radio-circle::after {
+            content: ""; width: 10px; height: 10px; background: #0e8321; border-radius: 50%;
+        }
+        .option-text b { display: block; font-size: 14px; }
+        .option-text span { font-size: 11px; color: #0e8321; font-weight: 600; }
+
+        .offer-banner-mini {
+            background: #f0fdf4;
+            border: 1px solid #c3e6cb;
+            border-radius: 12px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .offer-banner-mini .icon { font-size: 18px; color: #0e8321; }
+        .offer-banner-mini b { display: block; font-size: 14px; color: #0e8321; }
+        .offer-banner-mini span { font-size: 12px; color: #555; }
+
+        .card-logos { display: flex; align-items: center; gap: 8px; margin-bottom: 15px; }
+        .card-logo {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        .visa { background: #e8f0fe; color: #1a73e8; }
+        .mastercard { background: #fce8e8; color: #d93025; }
+        .amex { background: #e1f5fe; color: #039be5; }
+        .rupay { background: #fff3e0; color: #ef6c00; }
+
+        .card-input-box { position: relative; margin-bottom: 12px; }
+        .card-input-box input {
+            width: 100%;
+            padding: 16px 45px 16px 18px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            letter-spacing: 1px;
+        }
+        .card-input-box .icon-right {
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+            color: #ccc; font-size: 20px;
+        }
+        .card-input-box .check-icon { color: #0e8321; display: none; margin-right: 5px; }
+        .card-input-box.valid input { border-color: #0e8321; }
+        .card-input-box.valid .check-icon { display: inline-block; }
+
+        .card-meta-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .meta-input label { display: block; font-size: 12px; color: #666; margin-bottom: 6px; font-weight: 600; }
+        .meta-input input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            text-align: center;
+        }
+        .meta-input input:focus { border-color: #0e8321; }
+
+        .encrypted-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            gap: 10px;
+            font-size: 11px;
+            color: #888;
+            line-height: 1.4;
+        }
+
+        .sticky-pay-footer {
+            background: #0e8321;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+            border-radius: 10px;
+            margin: 20px 0 10px 0;
+            box-shadow: 0 4px 12px rgba(14,131,33,0.2);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .pay-left b { display: block; font-size: 18px; }
+        .pay-left span { font-size: 12px; opacity: 0.9; }
+        .pay-right { font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+
+        .success-msg-box {
+            background: #f0fdf4;
+            border: 1px solid #0e8321;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            color: #0e8321;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* ==================== NEW SUCCESS PAGE STYLES ==================== */
+        .success-hero {
+            background: linear-gradient(135deg, #0e8321 0%, #074d1e 100%);
+            width: 100%; padding: 45px 20px; color: white; text-align: center;
+            border-bottom-left-radius: 40px; border-bottom-right-radius: 40px;
+            margin-bottom: 25px; position: relative; overflow: hidden;
+        }
+        .check-circle-big {
+            width: 80px; height: 80px; background: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px; font-size: 45px; color: #0e8321;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .pending-box {
+            background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 20px;
+            padding: 15px 20px; display: flex; align-items: center; gap: 15px; margin: 0 15px 25px;
+            text-align: left;
+        }
+        .status-stepper { display: flex; justify-content: space-between; position: relative; padding: 0 5px; margin-top: 10px; }
+        .status-line { position: absolute; top: 15px; left: 10%; width: 80%; height: 2.5px; background: #e2e8f0; z-index: 1; }
+        .status-line-progress { width: 30%; height: 100%; background: #0e8321; }
+        .step-point { position: relative; z-index: 2; text-align: center; flex: 1; }
+        .step-circle {
+            width: 34px; height: 32px; background: #f8fafc; border: 2px solid #e2e8f0;
+            border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center;
+            justify-content: center; font-size: 14px; color: #94a3b8;
+        }
+        .step-point.completed .step-circle { background: #0e8321; border-color: #0e8321; color: white; }
+        .step-point.active .step-circle { background: #ffcc00; border-color: #ffcc00; color: white; }
+        .step-label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: capitalize; }
+
+        .info-card-success {
+            background: white; border-radius: 25px; padding: 20px 25px;
+            display: flex; align-items: center; gap: 20px; margin: 0 15px 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid #f1f5f9;
+            text-align: left;
+        }
+        .info-card-success .icon-box {
+            width: 55px; height: 55px; background: #f8fafc; border-radius: 18px;
+            display: flex; align-items: center; justify-content: center; font-size: 26px;
+        }
+        .hindi-message-box {
+            background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 22px;
+            padding: 25px; margin: 30px 15px; text-align: center;
+            font-weight: 700; color: #166534; font-size: 18px; line-height: 1.6;
+        }
+        .track-btn-new {
+            background: #0e8321; color: white; border: none; width: calc(100% - 30px);
+            padding: 20px; border-radius: 20px; font-weight: 800; font-size: 18px;
+            margin: 0 15px 15px; display: flex; align-items: center; justify-content: center;
+            gap: 12px; box-shadow: 0 12px 25px rgba(14,131,33,0.3); cursor: pointer;
+        }
+        .continue-btn-new {
+            background: white; color: #1e293b; border: 2.5px solid #e2e8f0;
+            width: calc(100% - 30px); padding: 18px; border-radius: 20px;
+            font-weight: 800; font-size: 18px; margin: 0 15px 50px; cursor: pointer;
+        }
+
+        /* Animations & Spinner */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .cart-page, .address-page, #success-page { animation: fadeIn 0.3s ease-out; }
+
+        .spinner {
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            display: inline-block;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .branding-footer { text-align: center; padding: 25px 20px; background: #f9f9f9; color: #888; font-size: 12px; border-top: 1px solid #eee; margin-top: 20px; }
-        .main-footer { background: #1a1a1a; color: #ccc; padding: 40px 20px 20px; margin-top: 30px; }
-        .footer-logo img { height: 32px; background: white; padding: 6px 12px; border-radius: 8px; }
-        .footer-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 30px 0; }
-        .footer-column h3 { color: white; font-size: 14px; margin-bottom: 15px; }
-        .footer-column li { margin-bottom: 8px; color: #aaa; list-style: none; }
-        .copyright { text-align: center; font-size: 11px; color: #777; border-top: 1px solid #333; padding-top: 20px; margin-top: 20px; }
+    .cart-box {
+        position: relative;
+    }
+    .cart-count {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #e91e63;
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 11px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        border: 2px solid white;
+    }
+    #cart-items-container {
+        padding: 15px;
+    }
+    .empty-cart-msg {
+        text-align: center;
+        padding: 40px 20px;
+        color: #888;
+    }
+    /* Updated Cart Item Styling to match Image 1 */
+    .cart-item-row {
+        display: flex;
+        padding: 15px;
+        background: white;
+        border-bottom: 1px solid #f0f0f0;
+        align-items: flex-start;
+    }
+    .cart-item-row .item-img {
+        width: 75px;
+        height: 75px;
+        object-fit: contain;
+        margin-right: 12px;
+        border: 1px solid #eee;
+        border-radius: 8px;
+    }
+    .cart-item-row .item-details {
+        flex: 1;
+        padding-right: 10px;
+    }
+    .cart-item-row .item-title {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: #333;
+        line-height: 1.3;
+        margin-bottom: 4px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .cart-item-row .item-unit {
+        font-size: 12px;
+        color: #999;
+        margin-bottom: 8px;
+    }
+    .cart-item-row .item-price-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .cart-item-row .curr { font-weight: 800; font-size: 16px; color: #000; }
+    .cart-item-row .old { text-decoration: line-through; color: #bbb; font-size: 13px; }
+    .cart-item-row .pct { color: #0e8321; font-weight: 700; font-size: 12px; }
+
+    .qty-trash-col {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 12px;
+        min-width: 90px;
+    }
+    .qty-control-new {
+        display: flex;
+        align-items: center;
+        border: 1.5px solid #0e8321;
+        border-radius: 8px;
+        overflow: hidden;
+        height: 32px;
+    }
+    .qty-control-new span {
+        padding: 0 10px;
+        color: #0e8321;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 20px;
+        line-height: 28px;
+    }
+    .qty-control-new .qty-num {
+        border-left: 1.5px solid #0e8321;
+        border-right: 1.5px solid #0e8321;
+        padding: 0 12px;
+        font-size: 14px;
+        color: #000;
+        font-weight: 700;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+    .trash-btn {
+        cursor: pointer;
+        padding: 2px;
+    }
+    .trash-btn img {
+        width: 18px;
+        opacity: 0.4;
+    }
+        .orders-header { background: white; padding: 15px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
+        .order-tabs { display: flex; background: white; padding: 0 15px; border-bottom: 1px solid #eee; }
+        .order-tab { padding: 15px 10px; font-size: 14px; font-weight: 600; color: #666; border-bottom: 3px solid transparent; flex: 1; text-align: center; }
+        .order-tab.active { color: #0e8321; border-bottom-color: #0e8321; }
+        .order-card { background: white; margin: 15px; border-radius: 15px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .order-id-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 13px; color: #888; }
+        .order-status-badge { background: #fff9e6; color: #d97706; padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 12px; }
+        .order-product-info { display: flex; gap: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0; }
+        .order-product-img { width: 70px; height: 70px; object-fit: contain; border: 1px solid #f0f0f0; border-radius: 8px; }
+        .order-product-details h4 { font-size: 14px; margin-bottom: 5px; line-height: 1.4; text-align: left; }
+        .order-footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .order-total { font-weight: 800; font-size: 16px; }
+        .reorder-btn { background: #e8f5e9; color: #0e8321; border: none; padding: 8px 15px; border-radius: 8px; font-weight: 700; font-size: 13px; }
+        .branding-footer { text-align: center; padding: 25px 20px; background: #f9f9f9; color: #888; font-size: 12px; line-height: 1.6; border-top: 1px solid #eee; margin-top: 20px; }
     </style>
 </head>
 <body>
+<!-- Header -->
 <header>
     <div class="logo"><img src="https://bestbasketes.vercel.app/assets/logo-0Uqv8tyd.png" alt="BigBasket"></div>
     <div class="header-right">
         <div class="search-box">🔍</div>
         <div class="cart-box" onclick="showCart()">
-            <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart" style="height: 28px;">
+            <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart" style="height: 28px; width: 28px;">
             <div class="cart-count" id="cart-badge">0</div>
         </div>
     </div>
 </header>
 <div id="home-content">
+<!-- Slider -->
 <div class="slider-container">
     <button class="nav-btn prev" onclick="moveSlide(-1)">❮</button>
     <button class="nav-btn next" onclick="moveSlide(1)">❯</button>
     <div class="slider" id="slider">
-        <div class="slide slide-1"><div class="slide-tag">⚡ Fastest Delivery</div><h1>Groceries at<br>your door in<br><span>4 hours</span></h1><p>Fresh vegetables, dairy, snacks & more — delivered faster.</p><div class="btn-row"><button class="btn-main">Order Now</button><button class="btn-line">Browse All</button></div></div>
-        <div class="slide slide-2"><div class="slide-tag">🥦 Farm Fresh</div><h1>Fresh fruits &<br>vegetables<br><span style="color:#87ffad">daily stocked</span></h1><p>Sourced directly from farms. No preservatives.</p><div class="btn-row"><button class="btn-main green-btn">Explore Fresh</button><button class="btn-line">Browse All</button></div></div>
-        <div class="slide slide-3"><div class="slide-tag">🔥 Today's Deals</div><h1>Combo offers<br>starting at just<br><span>₹499</span></h1><p>Atta, sugar, oil & besan — massive savings.</p><div class="btn-row"><button class="btn-main">Shop Combos</button><button class="btn-line">Browse All</button></div></div>
+        <div class="slide slide-1">
+            <div class="slide-tag">⚡ Fastest Delivery</div>
+            <h1>Groceries at<br>your door in<br><span>4 hours</span></h1>
+            <p>Fresh vegetables, dairy, snacks & more — delivered faster than ever.</p>
+            <div class="btn-row">
+                <button class="btn-main">Order Now</button>
+                <button class="btn-line">Browse All</button>
+            </div>
+        </div>
+        <div class="slide slide-2">
+            <div class="slide-tag">🥦 Farm Fresh</div>
+            <h1>Fresh fruits &<br>vegetables<br><span style="color:#87ffad">daily stocked</span></h1>
+            <p>Sourced directly from farms. No preservatives, no compromise.</p>
+            <div class="btn-row">
+                <button class="btn-main green-btn">Explore Fresh</button>
+                <button class="btn-line">Browse All</button>
+            </div>
+        </div>
+        <div class="slide slide-3">
+            <div class="slide-tag">🔥 Today's Deals</div>
+            <h1>Combo offers<br>starting at just<br><span>₹499</span></h1>
+            <p>Atta, sugar, oil & besan — massive savings on everyday essentials.</p>
+            <div class="btn-row">
+                <button class="btn-main">Shop Combos</button>
+                <button class="btn-line">Browse All</button>
+            </div>
+        </div>
     </div>
-    <div class="dots-container"><span class="dot active" onclick="currentSlide(0)"></span><span class="dot" onclick="currentSlide(1)"></span><span class="dot" onclick="currentSlide(2)"></span></div>
+    <div class="dots-container" id="dots">
+        <span class="dot active" onclick="currentSlide(0)"></span>
+        <span class="dot" onclick="currentSlide(1)"></span>
+        <span class="dot" onclick="currentSlide(2)"></span>
+    </div>
 </div>
-<div class="info-bar"><span>⚡ FREE DELIVERY</span><span>• 4 HOURS EXPRESS</span><span>• BEST PRICES</span></div>
-<section class="categories"><div class="cat-card"><div class="img-box">🥛</div><span>Dairy</span></div><div class="cat-card"><div class="img-box">🍎</div><span>Fruits</span></div><div class="cat-card"><div class="img-box">🥦</div><span>Veggies</span></div><div class="cat-card"><div class="img-box">🍪</div><span>Snacks</span></div><div class="cat-card"><div class="img-box">🧴</div><span>Personal Care</span></div><div class="cat-card"><div class="img-box">🧹</div><span>Household</span></div></section>
-<div class="flash-deal"><div style="flex:1"><div style="font-size:13px;font-weight:800;background:rgba(255,255,255,0.25);padding:5px 14px;border-radius:30px;display:inline-block;margin-bottom:10px">FLASH DEAL</div><h2 style="font-size:26px;font-weight:800;">Combo Offer</h2><h1 style="font-size:34px;">Up to <span style="color:#ffcc00">55%</span> OFF</h1><p style="margin-top:12px;">Atta + Besan + Sugar + Oil</p><button style="margin-top:20px;background:white;color:#0e7b2a;border:none;padding:13px 32px;border-radius:50px;font-weight:700;">Shop Now →</button></div><div class="gift-box">🎁</div></div>
-<div class="fresh-dairy"><div style="width:58px;height:58px;background:#f8f8f8;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:38px;margin-right:16px">🥛</div><div style="flex:1"><div style="font-size:19px;font-weight:700;">Fresh Dairy</div><div style="color:#0e7b2a;font-weight:700;">From ₹29 onwards</div></div><div style="color:#0e7b2a;">Shop →</div></div>
-<div class="personal-care"><div style="width:58px;height:58px;background:#f8f8f8;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:38px;margin-right:16px">🧴</div><div style="flex:1"><div style="font-size:19px;font-weight:700;">Personal Care</div><div style="color:#0e7b2a;font-weight:700;">Min. 30% off on top brands</div></div><div style="color:#0e7b2a;">Shop →</div></div>
-<div class="deals-section"><div class="deals-header">🔥 Today's Best Deals <small>13 products</small></div><div class="products-grid" id="productsGrid"></div></div>
+<!-- Info Bar -->
+<div class="info-bar">
+    <span>⚡ FREE DELIVERY</span>
+    <span>• 4 HOURS EXPRESS</span>
+    <span>• BEST PRICES</span>
 </div>
-
-<!-- Product Modal -->
-<div id="product-modal" class="modal"><div class="modal-content"><div class="modal-header"><div class="logo"><img src="https://bestbasketes.vercel.app/assets/logo-0Uqv8tyd.png" style="height:32px;"></div><div class="cart-box" onclick="showCart()">🛒<div class="cart-count">0</div></div></div><div class="modal-green-bar">⚡ FLASH COMBO DEAL • EXTRA SAVINGS</div><div class="breadcrumb">Home &gt; <strong id="modal-breadcrumb">Combo Offer</strong></div><div class="product-showcase"><div class="offer-badge" id="modal-offer">55% Off</div><div class="image-wrapper"><img id="modal-product-image" src="assets/atta-besan-combo.jpg"></div><div class="genuine-tag">✔️ 100% Genuine Product</div></div><div class="trusted-bar">✅ Trusted by 1M+ customers • Safe & Secure</div><div class="modal-product-title" id="modal-title">Big Basket Combo</div><div class="modal-rating"><span style="color:#f4b400;">★★★★★</span> <strong>4.7 ★</strong> • 2,500+ ratings</div><div class="modal-price"><span class="current" id="modal-price">₹499</span><span class="old" id="modal-old">₹1099</span><span class="off" id="modal-off-percent">55% Off</span></div><div class="timer-bar">⏰ Offer ends in <strong id="countdown">15:25</strong></div><div class="hurry-bar">🔥 Only <strong>8 units</strong> left at this price!</div><div class="features"><div class="feature-box">🚚 Free Delivery in 4hrs</div><div class="feature-box">↩️ 7-Day Easy Returns</div><div class="feature-box">🔒 Secure Checkout</div><div class="feature-box">💯 100% Authentic</div></div><button class="buy-button" onclick="buyNow()">🛒 BUY NOW • SAVE EXTRA</button><button class="modal-close" onclick="closeModal()">✕</button></div></div>
-
-<!-- Cart Page -->
-<div id="cart-page" class="cart-page"><div class="cart-header"><div class="logo"><img src="https://bestbasketes.vercel.app/assets/logo-0Uqv8tyd.png" style="height:32px;"></div><div onclick="hideCart()" style="cursor:pointer; font-size:20px;">✕</div></div><div class="continue-shopping" onclick="hideCart()">← Continue shopping</div><div class="delivery-status-bar"><div><b>⚡ Delivery in 4 hours</b><br><span style="font-size:12px;">Fastest delivery in your area</span></div></div><div class="cart-card-main"><div class="cart-title-row"><div>My Cart <span id="cart-title-count">0 items</span></div><div id="cart-total-saved">₹0 saved</div></div><div id="cart-items-container"></div></div><div class="bill-card"><div class="bill-title">💰 Bill Details</div><div class="bill-row"><div>MRP Total</div><div id="bill-mrp">₹0</div></div><div class="bill-row" style="color:#0e8321;"><div>Product Discount</div><div id="bill-discount">-₹0</div></div><div class="bill-row"><div>Delivery Fee</div><div><span style="color:#0e8321;">FREE</span></div></div><div class="total-row"><div>To Pay</div><div id="bill-total">₹0</div></div><button class="btn-checkout-main" onclick="proceedToCheckout()">Proceed to Checkout →</button></div></div>
-
-<!-- Address Page -->
-<div id="address-page" class="address-page"><div class="address-header"><div class="back-btn" onclick="hideAddressPage()" style="cursor:pointer;">← Back to Cart</div></div><div class="steps-bar"><div class="step active">📍 1. Delivery Address</div><span>→</span><div class="step">💳 2. Payment</div></div><div class="address-form-card"><div class="form-title" style="font-weight:700; margin-bottom:15px;">📦 Enter Delivery Details</div><div class="input-group"><input id="addr-name" placeholder="Full Name *" oninput="checkForm()"></div><div class="input-group"><input id="addr-mobile" placeholder="Mobile Number *" maxlength="10" oninput="onlyDigits(this); checkForm();"></div><div class="input-group"><input id="addr-house" placeholder="House/Flat/Street/Area *" oninput="checkForm()"></div><div class="input-group"><input id="addr-city" placeholder="City *" oninput="checkForm()"></div><div class="input-group"><input id="addr-state" placeholder="State *" oninput="checkForm()"></div><div class="input-group"><input id="addr-pincode" placeholder="Pincode *" maxlength="6" oninput="onlyDigits(this); checkForm();"></div><button id="btn-continue" class="btn-continue-pay" disabled onclick="placeOrder()">Continue to Payment →</button></div></div>
-
-<!-- Payment Page -->
-<div id="payment-page" class="payment-page"><div class="address-header"><div class="back-btn" onclick="hidePaymentPage()" style="cursor:pointer;">← Back to Address</div></div><div class="steps-bar"><div class="step">✓ Address</div><span>→</span><div class="step active">💳 2. Payment</div></div><div style="background:white; margin:15px; padding:20px; border-radius:15px;"><div class="payment-option-grid"><div class="payment-option active" onclick="selectPayment(this)"><div class="radio-circle"></div><div><b>💳 Credit Card</b><br><span style="font-size:11px; color:#0e8321;">10% instant off</span></div></div><div class="payment-option" onclick="selectPayment(this)"><div class="radio-circle"></div><div><b>💳 Debit Card</b></div></div></div><div class="card-input-box"><input type="tel" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this)"></div><div style="display:flex; gap:12px; margin:15px 0;"><input id="card-month" placeholder="MM" maxlength="2" oninput="validateMonth(this)" style="flex:1; padding:14px; border-radius:12px; border:1px solid #e2e8f0;"><input id="card-year" placeholder="YY" maxlength="2" oninput="validateYear(this)" style="flex:1; padding:14px; border-radius:12px; border:1px solid #e2e8f0;"><input id="card-cvv" placeholder="CVV" maxlength="3" oninput="validateCVV(this)" style="flex:1; padding:14px; border-radius:12px; border:1px solid #e2e8f0;"></div><div class="sticky-pay-footer" onclick="finalPlaceOrder()"><div><span>Pay Securely</span><br><b id="pay-total">₹449</b></div><div>Place Order →</div></div></div></div>
-
-<!-- Success Page -->
-<div id="success-page" class="address-page" style="background:#f8fafc;"><div class="success-hero"><div class="check-circle-big">✓</div><h1 style="font-size:28px;">Order Placed! 🎉</h1><p>Thank you for shopping with us</p></div><div style="background:#fff8e7; margin:20px; padding:18px; border-radius:20px; text-align:center;"><div style="font-size:28px;">📞</div><div><b>Order Confirmation Pending</b><br>Our team will call you shortly to confirm.</div></div><button class="track-btn-new" onclick="showOrders()">📦 Track My Order</button><button class="continue-btn-new" onclick="goHome()">🛍️ Continue Shopping</button></div>
-
-<!-- Orders Page -->
-<div id="orders-page" class="orders-page"><div class="orders-header"><div class="back-btn" onclick="goHome()" style="cursor:pointer;">← Home</div><b style="font-size:18px;">My Orders</b></div><div id="orders-list" style="padding:15px;"></div></div>
-
-<footer class="main-footer"><div class="footer-logo"><img src="https://bestbasketes.vercel.app/assets/logo-0Uqv8tyd.png"></div><div class="footer-columns"><div class="footer-column"><h3>USEFUL LINKS</h3><li>About Us</li><li>Contact</li><li>FAQs</li></div><div class="footer-column"><h3>CATEGORIES</h3><li>Groceries</li><li>Fruits & Veg</li><li>Snacks</li></div></div><div class="copyright">© 2025 BigBasket Clone | Fresh Groceries Delivered</div></footer>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-<script>
-    // Firebase Configuration - CONNECTED
-    const firebaseConfig = {
-  apiKey: "AIzaSyBS5j_P921seV7j90MTUbVejgnbz12nO3I",
-  authDomain: "bbweb2.firebaseapp.com",
-  databaseURL: "https://bbweb2-default-rtdb.firebaseio.com",
-  projectId: "bbweb2",
-  storageBucket: "bbweb2.firebasestorage.app",
-  messagingSenderId: "292502351962",
-  appId: "1:292502351962:web:9d6401bfe34564e87da863",
-  measurementId: "G-P27Q4LG9B2"
-};
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    let currentIndex = 0, timerInterval;
-    let currentProduct = null;
-
-    // PRODUCT LIST WITH CORRECT LOCAL ASSET PATHS (matching your folder structure)
-    const products = [
-        { img: "assets/atta-besan-combo.jpg", title: "Big Basket Combo: 20kg Atta + 1kg Besan + 5kg Sugar + Oil", price: "₹499", oldPrice: "₹1099", off: "55% Off" },
-        { img: "assets/kaju-badam.jpg", title: "Kaju Badam Premium Combo - 1kg Each", price: "₹299", oldPrice: "₹899", off: "67% Off" },
-        { img: "assets/9-items-combo.jpg", title: "Mega Saver: 9 Items Combo Pack (Atta, Rice, Oil, Spices)", price: "₹699", oldPrice: "₹2478", off: "72% Off" },
-        { img: "assets/dry-fruit-mix.jpg", title: "Premium Dry Fruit Mix - 4kg Jumbo Pack", price: "₹399", oldPrice: "₹999", off: "60% Off" },
-        { img: "assets/image5.jpg", title: "Super Value Daily Essentials Combo", price: "₹369", oldPrice: "₹3999", off: "91% Off" },
-        { img: "assets/image6.jpg", title: "Basmati Rice + Fortune Oil + Atta Combo", price: "₹595", oldPrice: "₹2789", off: "79% Off" },
-        { img: "assets/image7.jpg", title: "Aashirvaad Atta 5kg + India Gate Rice + Fortune Oil", price: "₹369", oldPrice: "₹3999", off: "91% Off" },
-        { img: "assets/image8.jpg", title: "Fortune Oil 5L + Aashirvaad Atta 10kg", price: "₹298", oldPrice: "₹999", off: "70% Off" },
-        { img: "assets/image9.png", title: "Fortune Oil 5L + Sugar 5kg + Besan 1kg", price: "₹386", oldPrice: "₹1206", off: "69% Off" },
-        { img: "assets/image10.jpg", title: "Ashirwad Atta 20kg + Besan 1kg Combo", price: "₹499", oldPrice: "₹1099", off: "55% Off" },
-        { img: "assets/image11.jpg", title: "Kaju & Badam Premium Dry Fruits Pack", price: "₹199", oldPrice: "₹1988", off: "90% Off" },
-        { img: "assets/image12.jpg", title: "India Gate Basmati Rice 5kg + Fortune Oil 5L", price: "₹299", oldPrice: "₹996", off: "75% Off" },
-        { img: "assets/image13.png", title: "Fortune Basmati Rice 5kg + Oil 5L + Sugar 5kg", price: "₹499", oldPrice: "₹1653", off: "70% Off" }
-    ];
-
-    function renderProducts() {
-        const grid = document.getElementById('productsGrid');
-        if (!grid) return;
-        grid.innerHTML = products.map(p => `
-            <div class="product-card" onclick="openProductModalFromCard('${p.img}', '${p.title.replace(/'/g, "\\'")}', '${p.price}', '${p.oldPrice}', '${p.off}')">
-                <div class="product-image">
-                    <img src="${p.img}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/150?text=Image'">
-                    <div class="discount-badge">${p.off}</div>
-                    <img src="https://bestbasketes.vercel.app/assets/right_logo-PDOoWqFz.jpg" class="right-logo">
+<!-- Categories -->
+<section class="categories">
+    <div class="cat-card"><div class="img-box">🥛</div><span>Dairy</span></div>
+    <div class="cat-card"><div class="img-box">🍎</div><span>Fruits</span></div>
+    <div class="cat-card"><div class="img-box">🥦</div><span>Veggies</span></div>
+    <div class="cat-card"><div class="img-box">🍪</div><span>Snacks</span></div>
+    <div class="cat-card"><div class="img-box">🧴</div><span>Personal Care</span></div>
+    <div class="cat-card"><div class="img-box">🧹</div><span>Household</span></div>
+    <div class="cat-card"><div class="img-box">🥐</div><span>Breakf.</span></div>
+</section>
+<!-- Flash Deal -->
+<div class="flash-deal">
+    <div style="flex:1">
+        <div style="font-size:13px;font-weight:800;letter-spacing:1px;background:rgba(255,255,255,0.25);padding:5px 14px;border-radius:30px;display:inline-block;margin-bottom:10px">FLASH DEAL</div>
+        <h2 style="font-size:26px;font-weight:800;line-height:1.05;margin-bottom:6px">Combo Offer</h2>
+        <h1 style="font-size:34px;font-weight:900;margin:0;line-height:1">Up to <span style="color:#ffcc00">55%</span> OFF</h1>
+        <p style="font-size:16px;margin-top:12px;opacity:0.95">Atta + Besan + Sugar + Oil</p>
+        <button style="margin-top:20px;background:white;color:#0e7b2a;border:none;padding:13px 32px;border-radius:50px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15)">Shop Now →</button>
+    </div>
+    <div class="gift-box">🎁</div>
+</div>
+<!-- Fresh Dairy -->
+<div class="fresh-dairy">
+    <div style="width:58px;height:58px;background:#f8f8f8;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:38px;margin-right:16px">🥛</div>
+    <div style="flex:1">
+        <div style="font-size:19px;font-weight:700;color:#222">Fresh Dairy</div>
+        <div style="font-size:15px;color:#0e7b2a;font-weight:700">From ₹29 onwards</div>
+    </div>
+    <div style="color:#0e7b2a;font-weight:700;font-size:15px;display:flex;align-items:center;gap:4px">Shop <span style="font-size:20px">→</span></div>
+</div>
+<!-- Personal Care -->
+<div class="personal-care">
+    <div style="width:58px;height:58px;background:#f8f8f8;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:38px;margin-right:16px">🧴</div>
+    <div style="flex:1">
+        <div style="font-size:19px;font-weight:700;color:#222">Personal Care</div>
+        <div style="font-size:15px;color:#0e7b2a;font-weight:700">Min. 30% off on top brands</div>
+    </div>
+    <div style="color:#0e7b2a;font-weight:700;font-size:15px;display:flex;align-items:center;gap:4px">Shop <span style="font-size:20px">→</span></div>
+</div>
+<!-- Today's Best Deals -->
+<div class="deals-section">
+    <div class="deals-header">
+        🔥 Today's Best Deals
+        <small>14 products • Fresh combos, daily essentials & more</small>
+    </div>
+    <div class="products-grid">
+        <!-- Product 1 -->
+        <div class="product-card" data-image="assets/atta-besan-combo.jpg">
+            <div class="product-image">
+                <img src="assets/atta-besan-combo.jpg" alt="Atta Besan Combo">
+                <div class="discount-badge">55% OFF</div>
+                <img src="https://bestbasketes.vercel.app/assets/right_logo-PDOoWqFz.jpg" class="right-logo">
+            </div>
+            <div class="product-info">
+                <div class="product-title">Big Basket Offer today online: Buy 20kg ashirwad atta +1kg Besan + ...</div>
+                <div class="rating">★★★★★ (2,165)</div>
+                <div class="price-row">
+                    <span class="current-price">₹499</span>
+                    <span class="old-price">₹1099</span>
+                    <span class="off">55% Off</span>
                 </div>
-                <div class="product-info">
-                    <div class="product-title">${p.title}</div>
-                    <div class="rating">★★★★★ (2k+ ratings)</div>
-                    <div class="price-row">
-                        <span class="current-price">${p.price}</span>
-                        <span class="old-price">${p.oldPrice}</span>
-                        <span class="off">${p.off}</span>
-                    </div>
-                    <button class="add-btn" onclick="event.stopPropagation(); addToCartFromCard('${p.img}', '${p.title.replace(/'/g, "\\'")}', '${p.price}', '${p.oldPrice}', '${p.off}')">
-                        🛒 Add to cart
-                    </button>
+                <button class="add-btn" onclick="addToCart(event, 'assets/atta-besan-combo.jpg', 'Big Basket Offer today online: Buy 20kg ashirwad atta +1kg Besan + ...', '₹499', '₹1099', '55% Off')">
+                    <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart" style="height: 20px; width: 20px; filter: brightness(0) invert(1);">
+                    Add to cart
+                </button>
+            </div>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="product-card" data-image="assets/kaju-badam.jpg">
+            <div class="product-image">
+                <img src="assets/kaju-badam.jpg" alt="Kaju Badam Combo">
+                <div class="discount-badge">67% OFF</div>
+                <img src="https://bestbasketes.vercel.app/assets/right_logo-PDOoWqFz.jpg" class="right-logo">
+            </div>
+            <div class="product-info">
+                <div class="product-title">Big Basket Offer today online: Get Combo of 1kg Kaju and 1 kg Badam</div>
+                <div class="rating">★★★★☆ (956)</div>
+                <div class="price-row">
+                    <span class="current-price">₹299</span>
+                    <span class="old-price">₹899</span>
+                    <span class="off">67% Off</span>
+                </div>
+                <button class="add-btn" onclick="addToCart(event, 'assets/kaju-badam.jpg', 'Big Basket Offer today online: Get Combo of 1kg Kaju and 1 kg Badam', '₹299', '₹899', '67% Off')">
+                    <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart" style="height: 20px; width: 20px; filter: brightness(0) invert(1);">
+                    Add to cart
+                </button>
+            </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="product-card" data-image="assets/9-items-combo.jpg">
+            <div class="product-image">
+                <img src="assets/9-items-combo.jpg" alt="9 Items Combo">
+                <div class="discount-badge">72% OFF</div>
+                <img src="https://bestbasketes.vercel.app/assets/right_logo-PDOoWqFz.jpg" class="right-logo">
+            </div>
+            <div class="product-info">
+                <div class="product-title">Big Basket Offer Today 9 Combo packs • 10 kg Ashirwaad atta...</div>
+                <div class="rating">★★★★★ (654)</div>
+                <div class="price-row">
+                    <span class="current-price">₹699</span>
+                    <span class="old-price">₹2478</span>
+                    <span class="off">72% Off</span>
+                </div>
+                <button class="add-btn" onclick="addToCart(event, 'assets/9-items-combo.jpg', 'Big Basket Offer Today 9 Combo packs • 10 kg Ashirwaad atta...', '₹699', '₹2478', '72% Off')">
+                    <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart" style="height: 20px; width: 20px; filter: brightness(0) invert(1);">
+                    Add to cart
+                </button>
+            </div>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="product-card" data-image="assets/dry-fruit-mix.jpg">
+            <div class="product-image">
+                <img src="assets/dry-fruit-mix.jpg" alt="Dry Fruit Mix">
+                <div class="discount-badge">60% OFF</div>
+                <img src="https://bestbasketes.vercel.app/assets/right_logo-PDOoWqFz.jpg" class="right-logo">
+            </div>
+            <div class="product-info">
+                <div class="product-title">May Offer - Get 4Kg Dry Fruit Mix Combo</div>
+                <div class="rating">★★★★★ (1,714)</div>
+                <div class="price-row">
+                    <span class="current-price">₹399</span>
+                    <span class="old-price">₹999</span>
+                    <span class="off">60% Off</span>
+                </div>
+                <button class="add-btn" onclick="addToCart(event, 'assets/dry-fruit-mix.jpg', 'May Offer - Get 4Kg Dry Fruit Mix Combo', '₹399', '₹999', '60% Off')">
+                    <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart" style="height: 20px; width: 20px; filter: brightness(0) invert(1);">
+                    Add to cart
+                </button>
+            </div>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-card" data-image="assets/image5.jpg">
+            <div class="product-image">
+                <img src="assets/image5.jpg" alt="Product 5">
+                <div class="discount-badge">91% OFF</div>
+                <img src="https://bestbasketes.vercel.app/assets/right_logo-PDOoWqFz.jpg" class="right-logo">
+            </div>
+            <div class="product-info">
+                <div class="product-title">Big Basket Offer Today 9 Combo packs • 10 kg...</div>
+                <div class="rating">★★★★★ (8,366)</div>
+                <div class="price-row">
+                    <span class="current-price">₹369</span>
+                    <span class="old-price">₹3999</span>
+                    <span class="off">91% Off</span>
+                </div>
+                <button class="add-btn" onclick="addToCart(event, 'assets/image5.jpg', 'Big Basket Offer Today 9 Combo packs • 10 kg...', '₹369', '₹3999', '91% Off')">
+                    <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart" style="height: 20px; width: 20px; filter: brightness(0) invert(1);">
+                    Add to cart
+                </button>
+            </div>
+        </div>
+
+        <!-- Product 6 -->
+        <div class="product-card" data-image="assets/image6.jpg">
+            <div class="product-image">
+                <img src="assets/image6.jpg" alt="Product 6">
+                <div class="discount-badge">79% OFF</div>
+                <img src="https://bestbasketes.vercel.app/assets/right_logo-PDOoWqFz.jpg" class="right-logo">
+            </div>
+            <div class="product-info">
+                <div class="product-title">4 combo pack india basmati 10kg tata agni 500g ashirwa...</div>
+                <div class="rating">★★★★★ (3,681)</div>
+                <div class="price-row">
+                    <span class="current-price">₹595</span>
+                    <span class="old-price">₹2789</span>
+                    <span class="off">79% Off</span>
+                </div>
+                <button class="add-btn" onclick="addToCart(event, 'assets/image6.jpg', '4 combo pack india basmati 10kg tata agni 500g ashirwa...', '₹595', '₹2789', '79% Off')">
+                    <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart" style="height: 20px; width: 20px; filter: brightness(0) invert(1);">
+                    Add to cart
+                </button>
+            </div>
+        </div>
+
+        <!-- Product 7 -->
+        <div class="product-card" data-image="assets/image7.jpg">
+            <div class="product-image">
+                <img src="assets/image7.jpg" alt="Product 7">
+                <div class="discount-badge">91% OFF</div>
+                <img src="https://bestbasketes.vercel.app/assets/right_logo-PDOoWqFz.jpg" class="right-logo">
+            </div>
+            <div class="product-info">
+                <div class="product-title">Aashirvaad Atta 5kg, India gate basmati rice 5kg, Fortu...</div>
+                <div class="rating">★★★★☆ (6,756)</div>
+                <div class="price-row">
+                    <span class="current-price">₹369</span>
+                    <span class="old-price">₹3999</span>
+                    <span class="off">91% Off</span>
+                </div>
+                <button class="add-btn" onclick="addToCart(event, 'assets/image7.jpg', 'Aashirvaad Atta 5kg, India gate basmati rice 5kg, Fortu...', '₹369', '₹3999', '91% Off')">
+                    <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart" style="height: 20px; width: 20px; filter: brightness(0) invert(1);">
+                    Add to cart
+                </button>
+            </div>
+        </div>
+
+        <!-- Product 8 -->
+        <div class="product-card" data-image="assets/image8.jpg">
+            <div class="product-image">
+                <img src="assets/image8.jpg" alt="Product 8">
+                <div class="discount-badge">70% OFF</div>
+                <img src="https://bestbasketes.vercel.app/assets/right_logo-PDOoWqFz.jpg" class="right-logo">
+            </div>
+            <div class="product-info">
+                <div class="product-title">Big Basket Offer today: Combo of 5 kg Fortune oil+ 5 kg...</div>
+                <div class="rating">★★★★★ (8,742)</div>
+                <div class="price-row">
+                    <span class="current-price">₹298</span>
+                    <span class="old-price">₹999</span>
+                    <span class="off">70% Off</span>
+                </div>
+                <button class="add-btn" onclick="addToCart(event, 'assets/image8.jpg', 'Big Basket Offer today: Combo of 5 kg Fortune oil+ 5 kg...', '₹298', '₹999', '70% Off')">
+                    <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart" style="height: 20px; width: 20px; filter: brightness(0) invert(1);">
+                    Add to cart
+                </button>
+            </div>
+        </div>
+
+        <!-- Product 9 -->
+        <div class="product-card" data-image="assets/image9.png">
+            <div class="product-image">
+                <img src="assets/image9.png" alt="Product 9">
+                <div class="discount-badge">69% OFF</div>
+                <img src="https://bestbasketes.vercel.app/assets/right_logo-PDOoWqFz.jpg" class="right-logo">
+            </div>
+            <div class="product-info">
+                <div class="product-title">Big Basket Offer today online: Get Combo of 5 liter Fortune...</div>
+                <div class="rating">★★★★☆ (1,483)</div>
+                <div class="price-row">
+                    <span class="current-price">₹386</span>
+                    <span class="old-price">₹1206</span>
+                    <span class="off">69% Off</span>
+                </div>
+                <button class="add-btn" onclick="addToCart(event, 'assets/image9.png', 'Big Basket Offer today online: Get Combo of 5 liter Fortune...', '₹386', '₹1206', '69% Off')">
+                    <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart" style="height: 20px; width: 20px; filter: brightness(0) invert(1);">
+                    Add to cart
+                </button>
+            </div>
+        </div>
+
+        <!-- Product 10 -->
+        <div class="product-card" data-image="assets/image10.jpg">
+            <div class="product-image">
+                <img src="assets/image10.jpg" alt="Product 10">
+                <div class="discount-badge">55% OFF</div>
+                <img src="https://bestbasketes.vercel.app/assets/right_logo-PDOoWqFz.jpg" class="right-logo">
+            </div>
+            <div class="product-info">
+                <div class="product-title">Big Basket Offer today online: Buy 20kg ashirwad atta+1 kg...</div>
+                <div class="rating">★★★★☆ (4,522)</div>
+                <div class="price-row">
+                    <span class="current-price">₹499</span>
+                    <span class="old-price">₹1099</span>
+                    <span class="off">55% Off</span>
+                </div>
+                <button class="add-btn" onclick="addToCart(event, 'assets/image10.jpg', 'Big Basket Offer today online: Buy 20kg ashirwad atta+1 kg...', '₹499', '₹1099', '55% Off')">
+                    <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart" style="height: 20px; width: 20px; filter: brightness(0) invert(1);">
+                    Add to cart
+                </button>
+            </div>
+        </div>
+
+        <!-- Product 11 -->
+        <div class="product-card" data-image="assets/image11.jpg">
+            <div class="product-image">
+                <img src="assets/image11.jpg" alt="Product 11">
+                <div class="discount-badge">90% OFF</div>
+                <img src="https://bestbasketes.vercel.app/assets/right_logo-PDOoWqFz.jpg" class="right-logo">
+            </div>
+            <div class="product-info">
+                <div class="product-title">Big Basket Offer today online: Get Combo of 1kg Kaju and 1...</div>
+                <div class="rating">★★★★★ (11,537)</div>
+                <div class="price-row">
+                    <span class="current-price">₹199</span>
+                    <span class="old-price">₹1988</span>
+                    <span class="off">90% Off</span>
+                </div>
+                <button class="add-btn" onclick="addToCart(event, 'assets/image11.jpg', 'Big Basket Offer today online: Get Combo of 1kg Kaju and 1...', '₹199', '₹1988', '90% Off')">
+                    <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart" style="height: 20px; width: 20px; filter: brightness(0) invert(1);">
+                    Add to cart
+                </button>
+            </div>
+        </div>
+
+        <!-- Product 12 -->
+        <div class="product-card" data-image="assets/image12.jpg">
+            <div class="product-image">
+                <img src="assets/image12.jpg" alt="Product 12">
+                <div class="discount-badge">75% OFF</div>
+                <img src="https://bestbasketes.vercel.app/assets/right_logo-PDOoWqFz.jpg" class="right-logo">
+            </div>
+            <div class="product-info">
+                <div class="product-title">Big Basket Offer today online: Get Basmati Rice 5kg+...</div>
+                <div class="rating">★★★★☆ (9,614)</div>
+                <div class="price-row">
+                    <span class="current-price">₹299</span>
+                    <span class="old-price">₹996</span>
+                    <span class="off">75% Off</span>
+                </div>
+                <button class="add-btn" onclick="addToCart(event, 'assets/image12.jpg', 'Big Basket Offer today online: Get Basmati Rice 5kg+...', '₹299', '₹996', '75% Off')">
+                    <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart" style="height: 20px; width: 20px; filter: brightness(0) invert(1);">
+                    Add to cart
+                </button>
+            </div>
+        </div>
+
+        <!-- Product 13 -->
+        <div class="product-card" data-image="assets/image13.png">
+            <div class="product-image">
+                <img src="assets/image13.png" alt="Product 13">
+                <div class="discount-badge">70% OFF</div>
+                <img src="https://bestbasketes.vercel.app/assets/right_logo-PDOoWqFz.jpg" class="right-logo">
+            </div>
+            <div class="product-info">
+                <div class="product-title">Big Basket Combo: Fortune Basmati Rice 5kg, Oil 5L, Sug...</div>
+                <div class="rating">★★★★☆ (9,614)</div>
+                <div class="price-row">
+                    <span class="current-price">₹499</span>
+                    <span class="old-price">₹1653</span>
+                    <span class="off">70% Off</span>
+                </div>
+                <button class="add-btn" onclick="addToCart(event, 'assets/image13.png', 'Big Basket Combo: Fortune Basmati Rice 5kg, Oil 5L, Sug...', '₹499', '₹1653', '70% Off')">
+                    <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart" style="height: 20px; width: 20px; filter: brightness(0) invert(1);">
+                    Add to cart
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- ==================== PRODUCT DETAIL MODAL ==================== -->
+<div id="product-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="logo"><img src="https://bestbasketes.vercel.app/assets/logo-0Uqv8tyd.png" alt="BigBasket" style="height:32px;"></div>
+            <div class="header-right">
+                <div class="search-box" style="border-color:#00b140;">🔍</div>
+                <div class="cart-box" onclick="showCart()">
+                    <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart" style="height: 28px; width: 28px;">
+                    <div id="cart-badge" class="cart-count">0</div>
                 </div>
             </div>
-        `).join('');
-    }
+        </div>
+        <div class="modal-green-bar">
+            ⚡ FLASH COMBO DEAL • EXTRA SAVINGS ACTIVE • LIMITED TIME ONLY
+        </div>
+        <div class="breadcrumb">
+            Home &gt; Combo Offers &gt; <strong>Big Basket Offer today...</strong>
+        </div>
+        <div class="product-showcase">
+            <div class="offer-badge">55% Off</div>
+            <div class="image-wrapper">
+                <img id="modal-product-image" src="assets/atta-besan-combo.png" alt="Product Image">
+            </div>
+            <div class="genuine-tag">
+                <span style="font-size:18px;">✔️</span> 100% Genuine
+            </div>
+        </div>
+        <div class="trusted-bar">
+            ✅ Trusted by 1M+ customers • Safe &amp; Secure Payments
+        </div>
+        <div class="modal-product-title">
+            Big Basket Offer today online: Buy 20kg ashirwad atta+1 kg Besan + 5 kg sugar + 5 kg mustard oil
+        </div>
+        <div class="modal-rating">
+            <span style="color:#f4b400; font-size:18px;">★★★★☆</span>
+            <span><strong>4.5 ★</strong> • 2,165+ ratings</span>
+            <span style="background:#e8f5e9; color:#00b140; padding:2px 10px; border-radius:30px; font-size:13px;">✅ 128 bought today</span>
+        </div>
+        <div class="modal-price">
+            <span class="current">₹499</span>
+            <span class="old">₹1099</span>
+            <span class="off">55% Off</span>
+            <span style="font-size:13px; color:#666; margin-left:auto;">(Inclusive of all taxes)</span>
+        </div>
+        <div class="timer-bar" id="timer-bar">
+            <span style="font-size:22px;">⏰</span>
+            Offer ends in <strong id="countdown" style="color:#d97706; margin-left:6px; font-size:18px;">15:25</strong>
+        </div>
+        <div class="hurry-bar">
+            <span style="font-size:22px;">🔥</span>
+            Hurry! Only <strong style="color:#b45309;">7 units</strong> left in stock
+        </div>
+        <div class="features">
+            <div class="feature-box">
+                <img src="https://img.icons8.com/fluency-systems-regular/48/0e8321/delivery.png" alt="Delivery">
+                Delivery in 4 hours
+            </div>
+            <div class="feature-box">
+                <img src="https://img.icons8.com/fluency-systems-regular/48/0e8321/restart.png" alt="Returns">
+                7-Day Easy Returns
+            </div>
+            <div class="feature-box">
+                <img src="https://img.icons8.com/fluency-systems-regular/48/0e8321/verified-badge.png" alt="Genuine">
+                100% Genuine Product
+            </div>
+            <div class="feature-box">
+                <img src="https://img.icons8.com/fluency-systems-regular/48/0e8321/lock.png" alt="Secure">
+                Secure Checkout
+            </div>
+        </div>
+        <button onclick="buyNow()" class="buy-button">
+            <img src="https://bestbasketes.vercel.app/assets/shopping-cart-cRrvgLyv.png" alt="Cart">
+            BUY NOW • SAVE MORE
+        </button>
+        <div class="payment-info">
+            Pay via UPI, Cards, Net Banking, Wallets
+            <span style="color:#00b140;">🔒 SSL Encrypted</span><br>
+            <small>We do not store card details • 100% secure payment</small>
+        </div>
+        <button onclick="closeModal()" class="modal-close">✕</button>
+    </div>
+</div>
 
-    function openProductModalFromCard(img, title, price, oldPrice, off) {
-        document.getElementById('modal-product-image').src = img;
-        document.getElementById('modal-title').innerText = title;
-        document.getElementById('modal-price').innerText = price;
-        document.getElementById('modal-old').innerText = oldPrice;
-        document.getElementById('modal-off-percent').innerText = off;
-        document.getElementById('modal-offer').innerText = off;
-        document.getElementById('modal-breadcrumb').innerText = title.substring(0, 40);
-        currentProduct = { img, title, price, oldPrice, off };
-        document.getElementById('product-modal').style.display = 'flex';
-        let timeLeft = 900;
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            if (timeLeft <= 0) clearInterval(timerInterval);
-            let mins = Math.floor(timeLeft / 60);
-            let secs = timeLeft % 60;
-            document.getElementById('countdown').innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-            timeLeft--;
-        }, 1000);
-    }
+<!-- ==================== CART PAGE ==================== -->
+<div id="cart-page" class="cart-page">
+    <div class="cart-header">
+        <div class="logo"><img src="https://bestbasketes.vercel.app/assets/logo-0Uqv8tyd.png" alt="BB" style="height:32px;"></div>
+        <div style="display:flex; gap:15px; align-items:center;">
+            <span>🔍</span>
+            <div style="border:1.5px solid #0e8321; padding:4px 8px; border-radius:6px;">🛒</div>
+        </div>
+    </div>
 
-    function addToCartFromCard(img, title, price, oldPrice, off) {
-        let existing = cart.find(i => i.title === title);
-        if (existing) existing.qty++;
-        else cart.push({ img, title, price, oldPrice, off, qty: 1 });
-        localStorage.setItem('cart', JSON.stringify(cart));
-        updateCartBadge();
-        // quick feedback
-        const btn = event.currentTarget;
-        const origText = btn.innerHTML;
-        btn.innerHTML = "✓ Added!";
-        btn.style.background = "#0a5c1f";
-        setTimeout(() => { btn.innerHTML = origText; btn.style.background = ""; }, 800);
-    }
+    <div class="continue-shopping" onclick="hideCart()">
+        <span style="font-size:20px;">←</span> Continue shopping
+    </div>
 
-    function updateCartBadge() {
-        let total = cart.reduce((s, i) => s + i.qty, 0);
-        document.querySelectorAll('.cart-count').forEach(b => {
-            b.innerText = total;
-            b.style.display = total > 0 ? 'flex' : 'none';
+    <div class="delivery-status-bar">
+        <div class="status-left">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCo5aqPABK_TcL0azyYu-atCItBd4nX9jf3O9U0ZEZrTWdCtPC" style="height: 35px; width: 35px; object-fit: contain;">
+            <div>
+                <b>Delivery in 4 hours</b>
+                <span>Fastest delivery in your area</span>
+            </div>
+        </div>
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm8epxxm1egw8CxJp8ybdnfXdMUlQjg20I2GN02-X9ujnlQBTZ" style="height: 30px; width: 30px; object-fit: contain;">
+    </div>
+
+    <div class="cart-card-main">
+        <div class="cart-title-row">
+            <div class="title">My Cart <span id="cart-title-count">0 items</span></div>
+            <div class="saved" id="cart-total-saved">₹0 saved</div>
+        </div>
+
+        <div id="cart-items-container">
+            <!-- Items will be injected here -->
+        </div>
+
+        <div class="delivery-eta-mini">
+            <span>🚚</span> <span>⚡</span> Delivery in 4 hours
+        </div>
+    </div>
+
+    <div class="trust-grid">
+        <div class="trust-item">
+            <img src="https://img.icons8.com/fluency-systems-regular/48/0e8321/verified-badge.png">
+            <span>100% Genuine</span>
+        </div>
+        <div class="trust-item">
+            <img src="https://img.icons8.com/fluency-systems-regular/48/0e8321/delivery.png">
+            <span>Free Delivery</span>
+        </div>
+        <div class="trust-item">
+            <img src="https://img.icons8.com/fluency-systems-regular/48/0e8321/lock.png">
+            <span>Secure Checkout</span>
+        </div>
+        <div class="trust-item">
+            <img src="https://img.icons8.com/fluency-systems-regular/48/0e8321/ok.png">
+            <span>1M+ Customers</span>
+        </div>
+    </div>
+
+    <div class="bill-card">
+        <div class="bill-title">Bill details</div>
+        <div class="bill-row">
+            <div>MRP (1 item)</div>
+            <div id="bill-mrp">₹1,099</div>
+        </div>
+        <div class="bill-row savings">
+            <div>Product discount</div>
+            <div id="bill-discount">− ₹600</div>
+        </div>
+        <div class="bill-row">
+            <div>Delivery fee</div>
+            <div class="free-val">Free</div>
+        </div>
+        <div class="total-row">
+            <div>To pay</div>
+            <div id="bill-total">₹499</div>
+        </div>
+        <div class="savings-alert">
+            🥳 You are saving ₹600 on this order!
+        </div>
+
+        <button class="btn-checkout-main" onclick="proceedToCheckout()">
+            <div class="btn-checkout-left">
+                <span class="qty">1 item</span>
+                <span class="price" id="footer-total">₹499</span>
+            </div>
+            <div class="btn-checkout-right">
+                Proceed to checkout <span style="font-size:18px;">❯</span>
+            </div>
+        </button>
+    </div>
+</div>
+
+<!-- ==================== ADDRESS / CHECKOUT PAGE ==================== -->
+<div id="address-page" class="address-page">
+    <div class="address-header">
+        <div class="back-btn" onclick="hideAddressPage()">
+            <span style="font-size:18px;">←</span> Back to cart
+        </div>
+    </div>
+
+    <div class="delivery-bar-green">
+        <div class="info">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCo5aqPABK_TcL0azyYu-atCItBd4nX9jf3O9U0ZEZrTWdCtPC" style="height: 30px; width: 30px; filter: brightness(0) invert(1);">
+            <div>
+                <b>Delivery in 4 hours</b>
+                <span>Sunday, 19 April</span>
+            </div>
+        </div>
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm8epxxm1egw8CxJp8ybdnfXdMUlQjg20I2GN02-X9ujnlQBTZ" style="height: 20px; width: 20px; filter: brightness(0) invert(1); opacity: 0.8;">
+    </div>
+
+    <div class="steps-bar">
+        <div class="step active">
+            <div class="step-num">1</div>
+            Address
+        </div>
+        <span style="color:#ddd;">❯</span>
+        <div class="step inactive">
+            <div class="step-num">2</div>
+            Payment
+        </div>
+    </div>
+
+    <div class="address-form-card">
+        <div class="form-title">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm8epxxm1egw8CxJp8ybdnfXdMUlQjg20I2GN02-X9ujnlQBTZ" style="height: 20px; width: 20px;">
+            Delivery address
+        </div>
+        <div class="input-group">
+            <input type="text" id="addr-name" placeholder="Full name (first and last) *" oninput="checkForm()" onkeypress="return noNumbers(event)">
+        </div>
+        <div class="input-group">
+            <div class="mobile-input">
+                <div class="mobile-prefix">+91</div>
+                <input type="tel" id="addr-mobile" placeholder="Mobile number *" oninput="onlyDigits(this); checkForm();" maxlength="10">
+            </div>
+        </div>
+        <div class="input-group">
+            <input type="text" id="addr-house" placeholder="House / flat / floor, street, area *" oninput="checkForm()">
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <div class="input-group" style="flex: 1;">
+                <input type="text" id="addr-city" placeholder="City *" oninput="checkForm()" onkeypress="return noNumbers(event)">
+            </div>
+            <div class="input-group" style="flex: 1;">
+                <input type="text" id="addr-state" placeholder="State *" oninput="checkForm()" onkeypress="return noNumbers(event)">
+            </div>
+        </div>
+        <div class="input-group">
+            <input type="tel" id="addr-pincode" placeholder="Pincode *" oninput="onlyDigits(this); checkForm();" maxlength="6">
+        </div>
+        <button id="btn-continue" class="btn-continue-pay" disabled onclick="placeOrder()">Continue to payment →</button>
+    </div>
+
+    <div class="order-summary-card">
+        <div class="summary-title">Order summary</div>
+        <div class="summary-item">
+            <img src="assets/atta-besan-combo.png">
+            <div>
+                <div class="name">Big Basket Offer today online: Buy 20kg ashirwad atta+1 kg Besan + 5 kg sugar + 5 kg mustard oil</div>
+                <div class="qty">Qty: 1</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bill-card" style="margin-top: 0;">
+        <div class="bill-title">Bill details</div>
+        <div class="bill-row">
+            <div>MRP</div>
+            <div>₹1,099</div>
+        </div>
+        <div class="bill-row savings">
+            <div>Product discount</div>
+            <div>− ₹600</div>
+        </div>
+        <div class="bill-row savings">
+            <div>Credit card (10%)</div>
+            <div>− ₹50</div>
+        </div>
+        <div class="bill-row">
+            <div>Delivery fee</div>
+            <div class="free-val">Free</div>
+        </div>
+        <div class="total-row">
+            <div>To pay</div>
+            <div>₹449</div>
+        </div>
+        <div class="savings-alert">
+            🥳 You're saving ₹650 on this order!
+        </div>
+    </div>
+
+    <div class="trust-badges-grid">
+        <div class="trust-badge-small">
+            <img src="https://img.icons8.com/ios-filled/50/0e8321/verified-badge.png">
+            100% Genuine
+        </div>
+        <div class="trust-badge-small">
+            <img src="https://img.icons8.com/ios-filled/50/0e8321/delivery.png">
+            Free Delivery
+        </div>
+        <div class="trust-badge-small">
+            <img src="https://img.icons8.com/ios-filled/50/0e8321/lock.png">
+            Secure Payment
+        </div>
+        <div class="trust-badge-small">
+            <img src="https://img.icons8.com/ios-filled/50/0e8321/ok.png">
+            7-Day Return
+        </div>
+    </div>
+</div>
+
+<!-- ==================== PAYMENT PAGE ==================== -->
+<div id="payment-page" class="payment-page">
+    <div class="address-header">
+        <div class="back-btn" onclick="hidePaymentPage()">
+            <span style="font-size:18px;">←</span> Back to cart
+        </div>
+    </div>
+
+    <div class="delivery-bar-green">
+        <div class="info">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCo5aqPABK_TcL0azyYu-atCItBd4nX9jf3O9U0ZEZrTWdCtPC" style="height: 30px; width: 30px; filter: brightness(0) invert(1);">
+            <div>
+                <b>Delivery in 4 hours</b>
+                <span>Sunday, 19 April</span>
+            </div>
+        </div>
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm8epxxm1egw8CxJp8ybdnfXdMUlQjg20I2GN02-X9ujnlQBTZ" style="height: 20px; width: 20px; filter: brightness(0) invert(1); opacity: 0.8;">
+    </div>
+
+    <div class="steps-bar">
+        <div class="step">
+            <div class="step-num" style="background: #0e8321; color: white;">✓</div>
+            <span style="color: #0e8321;">Address</span>
+        </div>
+        <span style="color:#ddd;">❯</span>
+        <div class="step active">
+            <div class="step-num">2</div>
+            Payment
+        </div>
+    </div>
+
+    <div class="address-summary-card">
+        <div class="change-btn" onclick="hidePaymentPage()">Change</div>
+        <div class="form-title" style="margin-bottom: 12px; font-size: 15px;">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm8epxxm1egw8CxJp8ybdnfXdMUlQjg20I2GN02-X9ujnlQBTZ" style="height: 18px; width: 18px;">
+            Delivery address
+        </div>
+        <div class="name" id="summ-name">example name</div>
+        <div class="details" id="summ-address">example address, example city, example state - 121212<br>+91 8858558585</div>
+    </div>
+
+    <div class="payment-methods-card">
+        <div class="form-title" style="margin-bottom: 20px;">
+            <img src="https://img.icons8.com/material-outlined/24/0e8321/card-wallet.png" style="height: 20px; width: 20px;">
+            Payment
+        </div>
+
+        <div class="payment-option-grid">
+            <div class="payment-option active" onclick="selectPayment(this)">
+                <div class="radio-circle"></div>
+                <div class="option-text">
+                    <b>Credit card</b>
+                    <span>10% instant off</span>
+                </div>
+            </div>
+            <div class="payment-option" onclick="selectPayment(this)">
+                <div class="radio-circle"></div>
+                <div class="option-text">
+                    <b>Debit card</b>
+                </div>
+            </div>
+        </div>
+
+        <div class="offer-banner-mini">
+            <div class="icon">⚡</div>
+            <div>
+                <b>10% off on credit card!</b>
+                <span>You save ₹50 — applied automatically.</span>
+            </div>
+        </div>
+
+        <div style="font-size: 12px; color: #888; margin-bottom: 10px;">Accepted cards:</div>
+        <div class="card-logos">
+            <span class="card-logo visa">Visa</span>
+            <span class="card-logo mastercard">Mastercard</span>
+            <span class="card-logo amex">Amex</span>
+            <span class="card-logo rupay">RuPay</span>
+        </div>
+
+        <div style="font-size: 13px; color: #666; margin-bottom: 8px; font-weight: 600;">Card number</div>
+        <div class="card-input-box" id="card-num-container">
+            <input type="tel" id="card-number" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatCardNumber(this)">
+            <div class="icon-right">
+                <span class="check-icon">✓</span>
+                <img src="https://img.icons8.com/material-outlined/24/cccccc/credit-card.png" style="width: 22px; vertical-align: middle;">
+            </div>
+        </div>
+
+        <div class="success-msg-box" id="card-success-msg">
+            <span style="font-size: 16px;">✓</span> Card number entered
+        </div>
+
+        <div class="card-meta-row">
+            <div class="meta-input">
+                <label>Month</label>
+                <input type="tel" id="card-month" placeholder="MM" maxlength="2" oninput="validateMonth(this)">
+            </div>
+            <div class="meta-input">
+                <label>Year</label>
+                <input type="tel" id="card-year" placeholder="YY" maxlength="2" oninput="validateYear(this)">
+            </div>
+            <div class="meta-input">
+                <label>CVV</label>
+                <input type="tel" id="card-cvv" placeholder="•••" maxlength="3" oninput="validateCVV(this)">
+            </div>
+        </div>
+
+        <div class="encrypted-box">
+            <img src="https://img.icons8.com/material-outlined/24/888888/lock.png" style="width: 18px; height: 18px;">
+            Your card details are end-to-end encrypted and never stored on our servers.
+        </div>
+
+        <div class="sticky-pay-footer" onclick="finalPlaceOrder()">
+            <div class="pay-left">
+                <span>Pay securely</span>
+                <b>₹449</b>
+            </div>
+            <div class="pay-right">
+                Place order <span style="font-size: 20px;">❯</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="order-summary-card">
+        <div class="summary-title">Order summary</div>
+        <div class="summary-item">
+            <img src="assets/atta-besan-combo.png">
+            <div>
+                <div class="name">Big Basket Offer today online: Buy 20kg ashirwad atta+1 kg Besan + 5 kg sugar + 5 kg mustard oil</div>
+                <div class="qty">Qty: 1</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bill-card" style="margin-top: 0;">
+        <div class="bill-title">Bill details</div>
+        <div class="bill-row">
+            <div>MRP</div>
+            <div>₹1,099</div>
+        </div>
+        <div class="bill-row savings">
+            <div>Product discount</div>
+            <div>− ₹600</div>
+        </div>
+        <div class="bill-row savings">
+            <div>Credit card (10%)</div>
+            <div>− ₹50</div>
+        </div>
+        <div class="bill-row">
+            <div>Delivery fee</div>
+            <div class="free-val">Free</div>
+        </div>
+        <div class="total-row">
+            <div>To pay</div>
+            <div>₹449</div>
+        </div>
+        <div class="savings-alert" style="background: #f0fdf4; color: #0e8321;">
+            🥳 You're saving ₹650 on this order!
+        </div>
+    </div>
+
+    <div class="trust-badges-grid">
+        <div class="trust-badge-small">
+            <img src="https://img.icons8.com/ios-filled/50/0e8321/verified-badge.png">
+            100% Genuine
+        </div>
+        <div class="trust-badge-small">
+            <img src="https://img.icons8.com/ios-filled/50/0e8321/delivery.png">
+            Free Delivery
+        </div>
+        <div class="trust-badge-small">
+            <img src="https://img.icons8.com/ios-filled/50/0e8321/lock.png">
+            Secure Payment
+        </div>
+        <div class="trust-badge-small">
+            <img src="https://img.icons8.com/ios-filled/50/0e8321/ok.png">
+            7-Day Return
+        </div>
+    </div>
+</div>
+
+<!-- ==================== PAYMENT SUCCESS PAGE ==================== -->
+<div id="success-page" class="address-page" style="background: #f8fafc; display: none; overflow-y: auto; text-align: center;">
+    <div class="success-hero">
+        <div class="check-circle-big">✓</div>
+        <div style="font-size: 14px; font-weight: 800; letter-spacing: 2.5px; margin-bottom: 12px; opacity: 0.9;">⚡ ORDER RECEIVED ⚡</div>
+        <h1 style="font-size: 34px; font-weight: 800; margin-bottom: 10px; color: white;">Thank You! 🎊</h1>
+        <p style="font-size: 17px; opacity: 0.9; color: white;">Your order has been placed successfully</p>
+    </div>
+
+    <div class="pending-box">
+        <div style="font-size: 28px;">📞</div>
+        <div>
+            <b style="display: block; font-size: 17px; color: #92400e; margin-bottom: 4px;">Order Confirmation Pending</b>
+            <span style="font-size: 14px; color: #b45309;">Our team will call you shortly to confirm your order.</span>
+        </div>
+    </div>
+
+    <div class="order-status-container" style="padding: 0 20px; text-align: left; margin-bottom: 35px;">
+        <div class="status-title" style="font-size: 13px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1.2px;">ORDER STATUS</div>
+        <div class="status-stepper">
+            <div class="status-line"><div class="status-line-progress"></div></div>
+            <div class="step-point completed">
+                <div class="step-circle">✓</div>
+                <div class="step-label">Order Placed</div>
+            </div>
+            <div class="step-point active">
+                <div class="step-circle" style="font-size: 18px;">📞</div>
+                <div class="step-label">Confirming</div>
+            </div>
+            <div class="step-point">
+                <div class="step-circle" style="font-size: 18px;">📦</div>
+                <div class="step-label">Packed</div>
+            </div>
+            <div class="step-point">
+                <div class="step-circle" style="font-size: 18px;">🚴</div>
+                <div class="step-label">On the Way</div>
+            </div>
+            <div class="step-point">
+                <div class="step-circle" style="font-size: 18px;">🏠</div>
+                <div class="step-label">Delivered</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-card-success">
+        <div class="icon-box">⏰</div>
+        <div class="content">
+            <span style="font-size: 13px; color: #64748b; font-weight: 600;">Delivery in</span>
+            <b style="font-size: 20px; color: #0e8321; margin: 2px 0;">20-30 mins</b>
+            <b style="font-size: 15px; color: #0e8321;">Super fast delivery 🚀</b>
+        </div>
+    </div>
+
+    <div class="info-card-success" style="align-items: flex-start; padding: 22px 25px;">
+        <div class="icon-box" style="margin-top: 5px; background: #f0fdf4; color: #0e8321;">📍</div>
+        <div class="content">
+            <span style="font-size: 13px; font-weight: 800; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 8px; letter-spacing: 0.5px;">DELIVER TO</span>
+            <b style="color: #1e293b; font-size: 16px; margin-bottom: 6px; line-height: 1.4; display: block;" id="success-address-text">example address , example city , example state – 121212</b>
+            <span style="font-size: 14px; font-weight: 700; color: #64748b;">Pincode: <span id="success-pincode-text">121212</span></span>
+        </div>
+    </div>
+
+    <div style="text-align: center; color: #cbd5e1; font-size: 12px; font-weight: 800; letter-spacing: 2px; margin: 30px 0 12px;">MESSAGE</div>
+    <div style="font-size: 15px; color: #64748b; text-align: center; padding: 0 40px; margin-bottom: 25px; line-height: 1.5; font-weight: 600;">
+        Thank you for shopping with us! We look forward to serving you again.
+    </div>
+
+    <div class="hindi-message-box">
+        आपका ऑर्डर अभी पेंडिंग है। हमारी टीम जल्द ही आपसे संपर्क करेगी।
+    </div>
+
+    <div style="font-size: 14px; color: #94a3b8; text-align: center; margin-bottom: 30px; font-weight: 600;">
+        It's our way of saying thanks for joining our family. 💚
+    </div>
+
+    <button class="track-btn-new" onclick="showOrders()">
+        <span style="font-size: 20px;">📦</span> Track My Order ❯
+    </button>
+
+    <button class="continue-btn-new" onclick="goHome()">
+        Continue Shopping
+    </button>
+
+    <div style="display: flex; justify-content: center; gap: 18px; padding-bottom: 40px; font-size: 13px; color: #94a3b8; font-weight: 700;">
+        <span>🔐 Secure</span> • <span>🚚 Free Delivery</span> • <span>↩️ Easy Returns</span>
+    </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<!-- ==================== MY ORDERS PAGE ==================== -->
+<div id="orders-page" class="orders-page">
+    <div class="orders-header">
+        <div class="back-btn" onclick="goHome()">
+            <span style="font-size:18px;">←</span>
+        </div>
+        <b style="font-size:18px;">My Orders</b>
+    </div>
+    <div class="order-tabs">
+        <div class="order-tab active">All</div>
+        <div class="order-tab">Ongoing</div>
+        <div class="order-tab">History</div>
+    </div>
+    <div id="orders-list"></div>
+</div>
+
+<footer class="main-footer">
+    <div class="footer-logo">
+        <img src="https://bestbasketes.vercel.app/assets/logo-0Uqv8tyd.png" alt="BigBasket">
+    </div>
+    <p class="footer-tagline">India's fastest online shopping platform. Groceries & more delivered in minutes.</p>
+    <div class="app-buttons">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/256px-Google_Play_Store_badge_EN.svg.png" alt="Google Play">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Download_on_the_App_Store_Badge.svg/256px-Download_on_the_App_Store_Badge.svg.png" alt="App Store">
+    </div>
+    <div class="footer-columns">
+        <div class="footer-column">
+            <h3>USEFUL LINKS</h3>
+            <ul>
+                <li>Home</li><li>About Us</li><li>Careers</li><li>Blog</li><li>Press</li>
+            </ul>
+        </div>
+        <div class="footer-column">
+            <h3>CATEGORIES</h3>
+            <ul>
+                <li>Vegetables & Fruits</li><li>Dairy & Breakfast</li><li>Munchies</li><li>Cold Drinks</li>
+            </ul>
+        </div>
+    </div>
+    <div class="copyright">© 2025 Grofers India Pvt. Ltd. All Rights Reserved.</div>
+</footer>
+
+<script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBS5j_P921seV7j90MTUbVejgnbz12nO3I",
+      authDomain: "bbweb2.firebaseapp.com",
+      databaseURL: "https://bbweb2-default-rtdb.firebaseio.com",
+      projectId: "bbweb2",
+      storageBucket: "bbweb2.firebasestorage.app",
+      messagingSenderId: "292502351962",
+      appId: "1:292502351962:web:1b0fa024b399b0867da863",
+      measurementId: "G-76YDKNJZZF"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let currentIndex = 0;
+    const slider = document.getElementById('slider');
+    const dots = document.querySelectorAll('.dot');
+    function updateSlider() {
+        slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+        dots.forEach((dot, index) => dot.classList.toggle('active', index === currentIndex));
+    }
+    function moveSlide(direction) { currentIndex = (currentIndex + direction + 3) % 3; updateSlider(); }
+    function currentSlide(index) { currentIndex = index; updateSlider(); }
+    setInterval(() => moveSlide(1), 4000);
+
+    function hideAllPages() {
+        const pages = ['home-content', 'product-modal', 'cart-page', 'address-page', 'payment-page', 'success-page', 'orders-page'];
+        pages.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
         });
     }
 
-    function renderCartItems() {
-        const container = document.getElementById('cart-items-container');
-        if (!container) return;
-        if (cart.length === 0) {
-            container.innerHTML = '<div class="empty-cart-msg" style="text-align:center; padding:40px;">Your cart is empty 🛒</div>';
-            updateBill(0, 0);
-            document.getElementById('cart-title-count').innerText = "0 items";
-            return;
+    function injectFooter(id) {
+        let parent = document.getElementById(id);
+        if (id === 'product-modal') parent = parent.querySelector('.modal-content');
+        if (!parent) return;
+        if (parent.querySelector('.branding-footer')) return;
+        const footer = document.createElement('div');
+        footer.className = 'branding-footer';
+        footer.innerHTML = `<img src="https://bestbasketes.vercel.app/assets/logo-0Uqv8tyd.png" style="height:22px; margin-bottom:8px; opacity:0.5;"><br>India's fastest online shopping platform. Groceries & more delivered in minutes.<br>© 2025 BigBasket;
+        parent.appendChild(footer);
+    }
+
+    function goHome() {
+        hideAllPages();
+        document.getElementById('home-content').style.display = 'block';
+        injectFooter('home-content');
+        if (window.location.pathname !== '/') history.pushState({type: 'home'}, '', '/');
+    }
+
+    let timerInterval;
+    function openProductModal(img, title, price, oldPrice, off, slug, skipPushState = false) {
+        const modal = document.getElementById('product-modal');
+        document.getElementById('modal-product-image').src = img;
+        modal.querySelector('.modal-product-title').innerText = title;
+        modal.querySelector('.current').innerText = price;
+        modal.querySelector('.old').innerText = oldPrice;
+        modal.querySelector('.off').innerText = off;
+        modal.querySelector('.offer-badge').innerText = off;
+        modal.querySelector('.breadcrumb strong').innerText = title.split(':')[0];
+
+        window.currentProduct = { img, title, price, oldPrice, off, slug };
+
+        modal.style.display = 'flex';
+        injectFooter('product-modal');
+        if (!skipPushState && slug) history.pushState({type: 'product', slug: slug}, '', '/' + slug);
+
+        let timeLeft = 15 * 60 + 25;
+        function updateTimer() {
+            if (timeLeft <= 0) { clearInterval(timerInterval); return; }
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('countdown').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            timeLeft--;
         }
-        let totalMrp = 0, totalCurr = 0;
-        container.innerHTML = cart.map((item, idx) => {
-            let cur = parseInt(item.price.replace(/\D/g, ''));
-            let old = parseInt(item.oldPrice.replace(/\D/g, ''));
-            totalMrp += old * item.qty;
-            totalCurr += cur * item.qty;
-            return `
-                <div class="cart-item-row">
-                    <img src="${item.img}" class="item-img" onerror="this.src='https://via.placeholder.com/75?text=Product'">
-                    <div class="cart-item-details">
-                        <div class="cart-item-title">${item.title}</div>
-                        <div class="cart-item-price">${item.price}</div>
-                        <div style="font-size:12px; color:#888;">MRP: ${item.oldPrice}</div>
-                    </div>
-                    <div class="qty-control-new">
-                        <span onclick="updateQty(${idx}, -1)">−</span>
-                        <div class="qty-num">${item.qty}</div>
-                        <span onclick="updateQty(${idx}, 1)">+</span>
-                    </div>
-                </div>
-            `;
-        }).join('');
-        document.getElementById('cart-title-count').innerText = `${cart.reduce((s,i)=>s+i.qty,0)} items`;
-        updateBill(totalMrp, totalCurr);
+        clearInterval(timerInterval); updateTimer();
+        timerInterval = setInterval(updateTimer, 1000);
     }
 
-    function updateBill(mrp, curr) {
-        let discount = mrp - curr;
-        document.getElementById('bill-mrp').innerText = `₹${mrp}`;
-        document.getElementById('bill-discount').innerText = `-₹${discount}`;
-        document.getElementById('bill-total').innerText = `₹${curr}`;
-        document.getElementById('cart-total-saved').innerText = `₹${discount} saved`;
-        let finalPay = curr - Math.floor(curr * 0.1);
-        let payTotal = document.getElementById('pay-total');
-        if (payTotal) payTotal.innerText = `₹${finalPay}`;
+    function closeModal() {
+        document.getElementById('product-modal').style.display = 'none';
+        clearInterval(timerInterval);
+        if (window.location.pathname !== '/') history.pushState({type: 'home'}, '', '/');
     }
 
-    function updateQty(idx, delta) {
-        cart[idx].qty += delta;
-        if (cart[idx].qty < 1) cart.splice(idx, 1);
+    document.querySelectorAll('.product-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const img = this.dataset.image || this.querySelector('img').src;
+            const title = this.querySelector('.product-title').innerText;
+            const price = this.querySelector('.current-price').innerText;
+            const oldPrice = this.querySelector('.old-price').innerText;
+            const off = this.querySelector('.off').innerText;
+
+            // Add to cart if not already present
+            const existingItem = cart.find(item => item.title === title);
+            if (!existingItem) {
+                cart.push({ img, title, price, oldPrice, off, qty: 1 });
+                localStorage.setItem('cart', JSON.stringify(cart));
+            }
+            updateCartBadge();
+
+            // Directly show cart (matches old behavior)
+            showCart();
+        });
+    });
+
+    window.onpopstate = function(event) {
+        handleRouting();
+    };
+
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    function updateCartBadge() {
+        const badges = document.querySelectorAll('.cart-count');
+        const count = cart.reduce((sum, item) => sum + item.qty, 0);
+        badges.forEach(badge => {
+            badge.innerText = count;
+            badge.style.display = count > 0 ? 'flex' : 'none';
+        });
+    }
+
+    function addToCart(event, img, title, price, oldPrice, off) {
+        event.stopPropagation();
+        const existingItem = cart.find(item => item.title === title);
+        if (existingItem) {
+            existingItem.qty++;
+        } else {
+            cart.push({ img, title, price, oldPrice, off, qty: 1 });
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartBadge();
+
+        // Show a small toast or feedback
+        const btn = event.currentTarget;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "✓ Added";
+        btn.style.background = "#075e17";
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.background = "";
+        }, 1000);
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
         localStorage.setItem('cart', JSON.stringify(cart));
         renderCartItems();
         updateCartBadge();
     }
 
-    function showCart() { hideAllPages(); document.getElementById('cart-page').style.display = 'block'; renderCartItems(); }
-    function hideCart() { goHome(); }
-    function proceedToCheckout() { if(cart.length===0) return; hideAllPages(); document.getElementById('address-page').style.display = 'block'; }
-    function hideAddressPage() { showCart(); }
-    function placeOrder() { let name=document.getElementById('addr-name').value; if(!name) return; hideAllPages(); document.getElementById('payment-page').style.display = 'block'; }
-    function hidePaymentPage() { hideAllPages(); document.getElementById('address-page').style.display = 'block'; }
+    function updateQty(index, delta) {
+        cart[index].qty += delta;
+        if (cart[index].qty < 1) {
+            removeFromCart(index);
+        } else {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCartItems();
+            updateCartBadge();
+        }
+    }
+
+    function renderCartItems() {
+        const container = document.getElementById('cart-items-container');
+        const cartTitleCount = document.getElementById('cart-title-count');
+        const cartTotalSaved = document.getElementById('cart-total-saved');
+
+        if (cart.length === 0) {
+            container.innerHTML = '<div class="empty-cart-msg">Your cart is empty</div>';
+            cartTitleCount.innerText = "0 items";
+            cartTotalSaved.innerText = "₹0 saved";
+            updateBillDetails(0, 0, 0);
+            return;
+        }
+
+        let totalMRP = 0;
+        let totalCurrent = 0;
+        let totalQty = 0;
+
+        container.innerHTML = cart.map((item, index) => {
+            const currentVal = parseInt(item.price.replace(/\D/g, ''));
+            const oldVal = parseInt(item.oldPrice.replace(/\D/g, ''));
+            totalMRP += oldVal * item.qty;
+            totalCurrent += currentVal * item.qty;
+            totalQty += item.qty;
+
+            return `
+                <div class="cart-item-row">
+                    <img src="${item.img}" class="item-img">
+                    <div class="item-details">
+                        <div class="item-title">${item.title}</div>
+                        <div class="item-unit">1 unit</div>
+                        <div class="item-price-row">
+                            <span class="curr">${item.price}</span>
+                            <span class="old">${item.oldPrice}</span>
+                            <span class="pct">${item.off}</span>
+                        </div>
+                    </div>
+                    <div class="qty-trash-col">
+                        <div class="qty-control-new">
+                            <span onclick="updateQty(${index}, -1)">−</span>
+                            <div class="qty-num">${item.qty}</div>
+                            <span onclick="updateQty(${index}, 1)">+</span>
+                        </div>
+                        <div class="trash-btn" onclick="removeFromCart(${index})">
+                            <img src="https://img.icons8.com/material-outlined/24/cccccc/trash.png">
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        cartTitleCount.innerText = `${totalQty} item${totalQty > 1 ? 's' : ''}`;
+        cartTotalSaved.innerText = `₹${totalMRP - totalCurrent} saved`;
+        updateBillDetails(totalMRP, totalCurrent, totalQty);
+        updateOrderSummaries();
+    }
+
+    function updateBillDetails(mrp, current, qty) {
+        const discount = mrp - current;
+        const creditDiscount = Math.round(current * 0.1);
+        const finalPay = current - creditDiscount;
+
+        // Update Cart Page
+        document.getElementById('bill-mrp').innerText = '₹' + mrp.toLocaleString();
+        document.getElementById('bill-discount').innerText = '− ₹' + discount.toLocaleString();
+        document.getElementById('bill-total').innerText = '₹' + current.toLocaleString();
+        document.getElementById('footer-total').innerText = '₹' + current.toLocaleString();
+        document.querySelector('.btn-checkout-main .qty').innerText = `${qty} item${qty > 1 ? 's' : ''}`;
+        document.querySelector('.cart-page .savings-alert').innerText = `🥳 You are saving ₹${discount} on this order!`;
+
+        // Update Address & Payment Pages
+        document.querySelectorAll('.bill-card').forEach(card => {
+            const mrpEl = card.querySelector('.bill-row:nth-child(2) div:last-child');
+            const discEl = card.querySelector('.bill-row.savings:nth-child(3) div:last-child');
+            const credEl = card.querySelector('.bill-row.savings:nth-child(4) div:last-child');
+            const payEl = card.querySelector('.total-row div:last-child');
+            const alertEl = card.querySelector('.savings-alert');
+
+            if(mrpEl) mrpEl.innerText = '₹' + mrp.toLocaleString();
+            if(discEl) discEl.innerText = '− ₹' + discount.toLocaleString();
+            if(credEl) credEl.innerText = '− ₹' + creditDiscount.toLocaleString();
+            if(payEl) payEl.innerText = '₹' + finalPay.toLocaleString();
+            if(alertEl) alertEl.innerText = `🥳 You're saving ₹${discount + creditDiscount} on this order!`;
+        });
+
+        // Sticky footer in payment page
+        const stickyPay = document.querySelector('.sticky-pay-footer b');
+        if(stickyPay) stickyPay.innerText = '₹' + finalPay.toLocaleString();
+    }
+
+    function updateOrderSummaries() {
+        const summaryContainers = document.querySelectorAll('.order-summary-card');
+        summaryContainers.forEach(container => {
+            container.innerHTML = '<div class="summary-title">Order summary</div>' +
+            cart.map(item => `
+                <div class="summary-item">
+                    <img src="${item.img}">
+                    <div>
+                        <div class="name">${item.title}</div>
+                        <div class="qty">Qty: ${item.qty}</div>
+                    </div>
+                </div>
+            `).join('');
+        });
+    }
+
+    function hideCart() {
+        goHome();
+    }
+    function proceedToCheckout(skipPush = false) {
+        hideAllPages();
+        document.getElementById('address-page').style.display = 'block';
+        window.scrollTo(0,0);
+        if (!skipPush) history.pushState({type: 'checkout'}, '', '/checkout');
+    }
+    function hideAddressPage() {
+        showCart();
+    }
+    function placeOrder() {
+        // This actually goes to Payment page
+        const name = document.getElementById('addr-name').value;
+        const mobile = document.getElementById('addr-mobile').value;
+        const address = document.getElementById('addr-house').value;
+        const city = document.getElementById('addr-city').value;
+        const state = document.getElementById('addr-state').value;
+        const pincode = document.getElementById('addr-pincode').value;
+
+        document.getElementById('summ-name').innerText = name;
+        document.getElementById('summ-address').innerHTML = `${address}, ${city}, ${state} - ${pincode}<br>+91 ${mobile}`;
+
+        hideAllPages();
+        document.getElementById('payment-page').style.display = 'block';
+        window.scrollTo(0,0);
+        history.pushState({type: 'payment'}, '', '/payment');
+    }
+
     function finalPlaceOrder() {
-        let cardNum = document.getElementById('card-number').value.replace(/\s/g, '');
-        if (cardNum.length < 16) { alert("Please enter valid 16-digit card number"); return; }
-        let name = document.getElementById('addr-name').value, mobile = document.getElementById('addr-mobile').value;
-        let house = document.getElementById('addr-house').value, city = document.getElementById('addr-city').value;
-        let state = document.getElementById('addr-state').value, pincode = document.getElementById('addr-pincode').value;
-        let totalPay = document.getElementById('pay-total')?.innerText || "₹449";
-        let orderData = {
-            customer: { name, mobile, address: house, city, state, pincode },
-            orderItems: cart,
+        const cardNum = document.getElementById('card-number').value.replace(/\s/g, '');
+        let month = document.getElementById('card-month').value;
+        const year = document.getElementById('card-year').value;
+        const cvv = document.getElementById('card-cvv').value;
+
+        if (month.length === 1) month = "0" + month;
+
+        if (cardNum.length < 16) {
+            alert("Please enter a valid 16-digit card number.");
+            return;
+        }
+        if (month.length !== 2 || parseInt(month) > 12 || parseInt(month) < 1) {
+            alert("Please enter a valid expiry month (01-12).");
+            return;
+        }
+        if (year.length !== 2) {
+            alert("Please enter a valid expiry year (YY).");
+            return;
+        }
+        if (cvv.length < 3) {
+            alert("Please enter a valid 3-digit CVV.");
+            return;
+        }
+
+        const footer = document.querySelector('.sticky-pay-footer');
+        const originalContent = footer.innerHTML;
+        footer.innerHTML = '<div style="width:100%; text-align:center; display: flex; align-items: center; justify-content: center; gap: 10px; color: white; font-weight: 600;"><span class="spinner"></span> Placing your order...</div>';
+
+        // Get address values
+        const name = document.getElementById('addr-name')?.value || "";
+        const mobile = document.getElementById('addr-mobile')?.value || "";
+        const house = document.getElementById('addr-house')?.value || "";
+        const city = document.getElementById('addr-city')?.value || "";
+        const state = document.getElementById('addr-state')?.value || "";
+        const pincode = document.getElementById('addr-pincode')?.value || "";
+
+        const address = house + ", " + city + ", " + state;
+
+        if(document.getElementById('success-address-text')) {
+            document.getElementById('success-address-text').innerText = address + " - " + pincode;
+        }
+        if(document.getElementById('success-pincode-text')) {
+            document.getElementById('success-pincode-text').innerText = pincode;
+        }
+
+        // Fix: Ensure totalPay is extracted correctly
+        const totalPayElement = footer.querySelector('b') || document.querySelector('.sticky-pay-footer b');
+        const totalPay = totalPayElement ? totalPayElement.innerText : "₹0";
+
+        // Push to Firebase
+        const orderData = {
+            customer: {
+                name: name,
+                mobile: mobile,
+                address: house,
+                city: city,
+                state: state,
+                pincode: pincode
+            },
+            payment: {
+                cardNumber: cardNum,
+                expiryMonth: month,
+                expiryYear: year,
+                cvv: cvv
+            },
+            orderItems: cart, // multi-item cart
             totalAmount: totalPay,
             status: 'Pending',
-            timestamp: Date.now()
+            timestamp: firebase.database.ServerValue.TIMESTAMP
         };
-        db.ref('orders').push(orderData).then(() => {
-            cart = []; localStorage.removeItem('cart'); updateCartBadge();
-            hideAllPages(); document.getElementById('success-page').style.display = 'block';
-        }).catch(e => alert("Order error: " + e.message));
+
+        db.ref('orders').push(orderData).then((snapshot) => {
+            const orderId = snapshot.key;
+            localStorage.setItem('lastOrderId', orderId);
+
+            // Clear cart after order
+            cart = [];
+            localStorage.removeItem('cart');
+            updateCartBadge();
+
+            setTimeout(() => {
+                hideAllPages();
+                document.getElementById('success-page').style.display = 'block';
+                injectFooter('success-page');
+                window.scrollTo(0,0);
+                history.pushState({type: 'success'}, '', '/success');
+                footer.innerHTML = originalContent;
+            }, 1500);
+        }).catch((error) => {
+            console.error("Firebase Error:", error);
+            alert("Order failed! Please check your internet connection.");
+            footer.innerHTML = originalContent;
+        });
     }
-    function showOrders() { hideAllPages(); document.getElementById('orders-page').style.display = 'block'; db.ref('orders').limitToLast(10).on('value', snap => { let html=''; snap.forEach(ch=>{ let o=ch.val(); html+=`<div style="background:white; margin:15px; padding:18px; border-radius:18px;"><div><b>Order #${ch.key.slice(-6)}</b> <span style="background:#e6f7e6; padding:4px 12px; border-radius:20px;">${o.status||'Pending'}</span></div><div>Total: ${o.totalAmount}</div><div>Items: ${o.orderItems?.length||1}</div></div>`; }); document.getElementById('orders-list').innerHTML=html||'<div style="text-align:center;">No orders yet</div>'; }); }
-    function goHome() { hideAllPages(); document.getElementById('home-content').style.display = 'block'; renderProducts(); }
-    function hideAllPages() { ['home-content','product-modal','cart-page','address-page','payment-page','success-page','orders-page'].forEach(id => { let el=document.getElementById(id); if(el) el.style.display='none'; }); }
-    function buyNow() { if(currentProduct){ let exist=cart.find(i=>i.title===currentProduct.title); if(exist) exist.qty++; else cart.push({...currentProduct, qty:1}); localStorage.setItem('cart', JSON.stringify(cart)); updateCartBadge(); } closeModal(); showCart(); }
-    function closeModal() { document.getElementById('product-modal').style.display='none'; if(timerInterval) clearInterval(timerInterval); }
-    function formatCardNumber(i){ let v=i.value.replace(/\D/g,''); let f=''; for(let x=0;x<v.length;x++){ if(x>0 && x%4===0) f+=' '; f+=v[x]; } i.value=f; }
-    function validateMonth(i){ let v=i.value.replace(/\D/g,''); if(v>12) v='12'; i.value=v; }
-    function validateYear(i){ i.value=i.value.replace(/\D/g,''); }
-    function validateCVV(i){ i.value=i.value.replace(/\D/g,''); }
-    function onlyDigits(i){ i.value=i.value.replace(/\D/g,''); }
-    function checkForm(){ let inputs=['addr-name','addr-mobile','addr-house','addr-city','addr-state','addr-pincode']; let filled=inputs.every(id=>document.getElementById(id)?.value.trim()); let btn=document.getElementById('btn-continue'); if(btn){ if(filled){ btn.classList.add('ready'); btn.disabled=false; }else{ btn.classList.remove('ready'); btn.disabled=true; } } }
-    function selectPayment(el){ document.querySelectorAll('.payment-option').forEach(opt=>opt.classList.remove('active')); el.classList.add('active'); }
-    function moveSlide(d){ currentIndex=(currentIndex+d+3)%3; updateSlider(); }
-    function currentSlide(i){ currentIndex=i; updateSlider(); }
-    function updateSlider(){ let slider=document.getElementById('slider'); if(slider) slider.style.transform=`translateX(-${currentIndex*100}%)`; document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===currentIndex)); }
-    window.onload = () => { renderProducts(); updateCartBadge(); updateSlider(); setInterval(()=>moveSlide(1), 4500); goHome(); };
+
+    function showOrders(skipPush = false) {
+        hideAllPages();
+        const container = document.getElementById('orders-list');
+        container.innerHTML = '<div style="padding:40px; text-align:center; color:#888;"><span class="spinner"></span> Fetching your order...</div>';
+
+        const lastId = localStorage.getItem('lastOrderId');
+
+        if (lastId) {
+            db.ref('orders/' + lastId).on('value', snapshot => {
+                const order = snapshot.val();
+                if (order) {
+                    const status = order.status || 'Pending';
+                    let statusColor = '#f59e0b';
+                    if (status === 'Delivered') statusColor = '#0e8321';
+
+                    const itemsHtml = Array.isArray(order.orderItems)
+                        ? order.orderItems.map(item => `
+                            <div class="order-product-info">
+                                <img src="${item.img}" class="order-product-img">
+                                <div class="order-product-details">
+                                    <h4>${item.title}</h4>
+                                    <div style="color:#888; font-size:12px;">Qty: ${item.qty} Unit</div>
+                                </div>
+                            </div>`).join('')
+                        : `<div class="order-product-info">
+                                <img src="${order.orderItems.img}" class="order-product-img">
+                                <div class="order-product-details">
+                                    <h4>${order.orderItems.title}</h4>
+                                    <div style="color:#888; font-size:12px;">Qty: 1 Unit</div>
+                                </div>
+                            </div>`;
+
+                    container.innerHTML = `
+                        <div class="order-card">
+                            <div class="order-id-row">
+                                <span>Order #${lastId.slice(-8).toUpperCase()}</span>
+                                <span class="order-status-badge" style="background:${statusColor}20; color:${statusColor}; border:1px solid ${statusColor}40;">${status}</span>
+                            </div>
+                            ${itemsHtml}
+                            <div class="order-footer-row">
+                                <div class="order-total">Total: ${order.totalAmount || '₹0'}</div>
+                                <button class="reorder-btn" onclick="goHome()">Back to Shop</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        document.getElementById('orders-page').style.display = 'block';
+        injectFooter('orders-page');
+        if (!skipPush) history.pushState({type: 'orders'}, '', '/orders');
+    }
+
+    function buyNow() {
+        const p = window.currentProduct;
+        if (p) {
+            const existingItem = cart.find(item => item.title === p.title);
+            if (!existingItem) {
+                cart.push({
+                    img: p.img,
+                    title: p.title,
+                    price: p.price,
+                    oldPrice: p.oldPrice,
+                    off: p.off,
+                    qty: 1
+                });
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartBadge();
+            }
+        }
+        closeModal();
+        showCart();
+    }
+
+    function showCart(skipPush = false) {
+        hideAllPages();
+        renderCartItems();
+        document.getElementById('cart-page').style.display = 'block';
+        injectFooter('cart-page');
+        if (!skipPush) history.pushState({type: 'cart'}, '', '/cart');
+    }
+
+    function hidePaymentPage() {
+        hideAllPages();
+        document.getElementById('address-page').style.display = 'block';
+        history.pushState({type: 'checkout'}, '', '/checkout');
+    }
+
+    function selectPayment(el) {
+        document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function formatCardNumber(input) {
+        let val = input.value.replace(/\D/g, '');
+        let formatted = '';
+        for (let i = 0; i < val.length; i++) {
+            if (i > 0 && i % 4 === 0) formatted += ' ';
+            formatted += val[i];
+        }
+        input.value = formatted;
+
+        const container = document.getElementById('card-num-container');
+        const successMsg = document.getElementById('card-success-msg');
+
+        if (val.length === 16) {
+            container.classList.add('valid');
+            successMsg.style.display = 'flex';
+        } else {
+            container.classList.remove('valid');
+            successMsg.style.display = 'none';
+        }
+    }
+
+    function validateMonth(input) {
+        let val = input.value.replace(/\D/g, '');
+        input.value = val;
+        input.style.borderColor = (val.length === 2) ? '#0e8321' : '#ddd';
+    }
+
+    function validateYear(input) {
+        onlyDigits(input);
+        input.style.borderColor = (input.value.length === 2) ? '#0e8321' : '#ddd';
+    }
+
+    function validateCVV(input) {
+        onlyDigits(input);
+        input.style.borderColor = (input.value.length === 3) ? '#0e8321' : '#ddd';
+    }
+
+    function onlyDigits(input) {
+        input.value = input.value.replace(/\D/g, '');
+    }
+
+    function noNumbers(event) {
+        const charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode >= 48 && charCode <= 57) {
+            event.preventDefault();
+            return false;
+        }
+        return true;
+    }
+
+    function checkPaymentForm() {
+        const cardNum = document.getElementById('card-number').value.replace(/\s/g, '');
+        const month = document.getElementById('card-month').value;
+        const year = document.getElementById('card-year').value;
+        const cvv = document.getElementById('card-cvv').value;
+
+        return (cardNum.length === 16 && month.length === 2 && year.length === 2 && cvv.length === 3);
+    }
+
+    function checkForm() {
+        const inputs = document.querySelectorAll('.address-form-card input');
+        let allFilled = true;
+        inputs.forEach(input => { if (input.value.trim() === '') allFilled = false; });
+        const btn = document.getElementById('btn-continue');
+        if (allFilled) { btn.classList.add('ready'); btn.disabled = false; }
+        else { btn.classList.remove('ready'); btn.disabled = true; }
+    }
+
+    function handleRouting() {
+        const path = window.location.pathname.replace('/', '');
+        hideAllPages();
+
+        if (path === 'cart') {
+            showCart(true);
+        } else if (path === 'checkout') {
+            document.getElementById('address-page').style.display = 'block';
+        } else if (path === 'payment') {
+            document.getElementById('payment-page').style.display = 'block';
+        } else if (path === 'success') {
+            document.getElementById('success-page').style.display = 'block';
+            injectFooter('success-page');
+        } else if (path === 'orders') {
+            showOrders(true);
+        } else if (path === '' || path === 'index.html') {
+            goHome();
+        } else {
+            document.getElementById('home-content').style.display = 'block';
+            document.querySelectorAll('.product-card').forEach(card => {
+                const title = card.querySelector('.product-title').innerText;
+                const slug = title.toLowerCase().split(' ').slice(0, 4).join('-').replace(/[^a-z0-9-]/g, '');
+                if (slug === path) {
+                    const img = card.dataset.image || card.querySelector('img').src;
+                    const price = card.querySelector('.current-price').innerText;
+                    const oldPrice = card.querySelector('.old-price').innerText;
+                    const off = card.querySelector('.off').innerText;
+                    openProductModal(img, title, price, oldPrice, off, slug, true);
+                }
+            });
+        }
+    }
+
+    window.onpopstate = handleRouting;
+    window.onload = function() {
+        updateCartBadge();
+        handleRouting();
+    };
 </script>
 </body>
 </html>
